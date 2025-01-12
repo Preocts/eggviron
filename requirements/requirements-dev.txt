@@ -1,0 +1,4 @@
+# Development Requirements - linting, formatting, etc.
+
+pre-commit
+mypy
