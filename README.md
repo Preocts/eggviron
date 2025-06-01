@@ -6,3 +6,8 @@
 [![Python tests](https://github.com/Preocts/eggviron/actions/workflows/python-tests.yml/badge.svg?branch=main)](https://github.com/Preocts/eggviron/actions/workflows/python-tests.yml)
 
 # eggviron
+
+- [Contributing Guide and Developer Setup Guide](./CONTRIBUTING.md)
+- [License: MIT](./LICENSE)
+
+---
