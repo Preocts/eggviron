@@ -14,6 +14,25 @@ FOO=BAR
 This is comment but it doesn't start with a #
 """
 
+VALID_ENV_FILE = """\
+simple=value
+formated = value
+        whitespace              =               value
+        quoted_whitespace       = "\t\tvalue\t\t"
+double_qouted = "Some qouted value"
+single_qouted = 'Some qouted value'
+double_nested_qouted = "'Some qouted value'"
+single_nested_qouted = '"Some qouted value"'
+# commented = line
+
+
+leading_broken_double_nested_qouted = 'Some qouted value'"
+leading_broken_single_nested_qouted = "Some qouted value"'
+trailing_broken_double_nested_qouted = "'Some qouted value'
+trailing_broken_single_nested_qouted = '"Some qouted value"
+export export_example = elpmaxe
+"""
+
 
 @contextlib.contextmanager
 def create_file(contents: str) -> Generator[str, None, None]:
@@ -31,10 +50,43 @@ def create_file(contents: str) -> Generator[str, None, None]:
         os.remove(file_path)
 
 
-def test_invalid_format_raises_value_error() -> None:
+@pytest.fixture
+def loader() -> Generator[EnvFileLoader, None, None]:
+    """Create a loader class with a valid .env file loaded."""
+    with create_file(VALID_ENV_FILE) as file_path:
+        yield EnvFileLoader(file_path)
+
+
+@pytest.mark.parametrize(
+    "contents",
+    (
+        "FOO=BAR\nThis is comment but it doesn't start with a #",
+        # TODO
+        # "FOO BAR=BAZ",
+    ),
+)
+def test_invalid_format_raises_value_error(contents: str) -> None:
     # Use a comment line missing the # to assert this failure catch
-    with create_file(INVALID_ENV_FILE) as file_path:
+    with create_file(contents) as file_path:
         loader = EnvFileLoader(file_path)
 
         with pytest.raises(ValueError, match="Line 2: Invalid format, expecting '='"):
             loader.run()
+
+
+def test_export_lines_are_valid(loader: EnvFileLoader) -> None:
+    # Ensure lines prefixed with "export" are valid (the "export" is dropped)
+    results = loader.run()
+
+    assert results["export_example"] == "elpmaxe"
+
+
+def test_whitespace_is_ignored_unless_quoted(loader: EnvFileLoader) -> None:
+    # Whitespace should be trimmed unless the values are quoted
+    # TODO
+    # This poses the question of what to do with escaped-characters
+    # Do we evaluate them or no?
+    results = loader.run()
+
+    assert results["whitespace"] == "value"
+    assert results["quoted_whitespace"] == "\t\tvalue\t\t"
