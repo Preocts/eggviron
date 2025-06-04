@@ -14,11 +14,11 @@ FOO=BAR
 This is comment but it doesn't start with a #
 """
 
-VALID_ENV_FILE = """\
+VALID_ENV_FILE = r"""
 simple=value
 formated = value
         whitespace              =               value
-        quoted_whitespace       = "\t\tvalue\t\t"
+        quoted_whitespace       = "    value    "
 double_qouted = "Some qouted value"
 single_qouted = 'Some qouted value'
 double_nested_qouted = "'Some qouted value'"
@@ -57,20 +57,23 @@ def loader() -> Generator[EnvFileLoader, None, None]:
         yield EnvFileLoader(file_path)
 
 
-@pytest.mark.parametrize(
-    "contents",
-    (
-        "FOO=BAR\nThis is comment but it doesn't start with a #",
-        # TODO
-        # "FOO BAR=BAZ",
-    ),
-)
-def test_invalid_format_raises_value_error(contents: str) -> None:
+def test_missing_equals_raises_value_error() -> None:
     # Use a comment line missing the # to assert this failure catch
+    contents = "FOO=BAR\nThis is comment but it doesn't start with a #"
     with create_file(contents) as file_path:
         loader = EnvFileLoader(file_path)
 
         with pytest.raises(ValueError, match="Line 2: Invalid format, expecting '='"):
+            loader.run()
+
+
+def test_space_in_key_raises_value_error() -> None:
+    # Use a comment line missing the # to assert this failure catch
+    contents = "FOO BAR=BAZ"
+    with create_file(contents) as file_path:
+        loader = EnvFileLoader(file_path)
+
+        with pytest.raises(ValueError, match="Line 1: Invalid key, 'FOO BAR'"):
             loader.run()
 
 
@@ -83,10 +86,7 @@ def test_export_lines_are_valid(loader: EnvFileLoader) -> None:
 
 def test_whitespace_is_ignored_unless_quoted(loader: EnvFileLoader) -> None:
     # Whitespace should be trimmed unless the values are quoted
-    # TODO
-    # This poses the question of what to do with escaped-characters
-    # Do we evaluate them or no?
     results = loader.run()
 
     assert results["whitespace"] == "value"
-    assert results["quoted_whitespace"] == "\t\tvalue\t\t"
+    assert results["quoted_whitespace"] == "    value    "

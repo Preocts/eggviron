@@ -67,12 +67,14 @@ class EnvFileLoader:
                 continue
 
             if len(line.split("=", 1)) != 2:
-                msg = f"Line {idx}: Invalid format, expecting '='"
-                raise ValueError(msg)
+                raise ValueError(f"Line {idx}: Invalid format, expecting '='")
 
             key, value = line.split("=", 1)
 
             key = _strip_export(key).strip()
+            if not _is_valid_key(key):
+                raise ValueError(f"Line {idx}: Invalid key, '{key}'")
+
             value = value.strip()
 
             value = _remove_lt_quotes(value)
@@ -91,3 +93,8 @@ def _remove_lt_quotes(in_: str) -> str:
 def _strip_export(in_: str) -> str:
     """Removes leading 'export ' prefix"""
     return re.sub(_EXPORT_PREFIX, "", in_)
+
+
+def _is_valid_key(in_: str) -> bool:
+    """True if the key is value."""
+    return bool(_VALIDATE_KEY.match(in_))

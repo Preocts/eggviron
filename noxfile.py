@@ -32,11 +32,12 @@ CLEANABLE_TARGETS = [
 ]
 
 # Define the default sessions run when `nox` is called on the CLI
+nox.options.reuse_venv = "always"
 nox.options.default_venv_backend = "virtualenv"
 nox.options.sessions = ["lint", "test"]
 
 
-@nox.session()
+@nox.session(reuse_venv="never")
 def dev(session: nox.Session) -> None:
     """Setup a development environment by creating the venv and installs dependencies."""
     # Use the active environement if it exists, otherwise create a new one
