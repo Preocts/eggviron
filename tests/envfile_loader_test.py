@@ -30,6 +30,7 @@ leading_broken_single_nested_quoted = "Some quoted value"'
 trailing_broken_double_nested_quoted = "'Some quoted value'
 trailing_broken_single_nested_quoted = '"Some quoted value"
 export export_example = elpmaxe
+actually valid = neat
 """
 
 
@@ -66,14 +67,12 @@ def test_missing_equals_raises_value_error() -> None:
             loader.run()
 
 
-def test_space_in_key_raises_value_error() -> None:
-    # Use a comment line missing the # to assert this failure catch
-    contents = "FOO BAR=BAZ"
-    with create_file(contents) as file_path:
-        loader = EnvFileLoader(file_path)
+def test_spaces_in_keys(loader: EnvFileLoader) -> None:
+    # It is valid to have a space in environment variables
+    # https://pubs.opengroup.org/onlinepubs/9799919799/
+    results = loader.run()
 
-        with pytest.raises(ValueError, match="Line 1: Invalid key, 'FOO BAR'"):
-            loader.run()
+    assert results["actually valid"] == "neat"
 
 
 def test_export_lines_are_valid(loader: EnvFileLoader) -> None:
