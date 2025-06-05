@@ -9,11 +9,6 @@ import pytest
 
 from eggviron.envfile_loader import EnvFileLoader
 
-INVALID_ENV_FILE = """\
-FOO=BAR
-This is comment but it doesn't start with a #
-"""
-
 VALID_ENV_FILE = r"""
 simple=value
 formated = value
