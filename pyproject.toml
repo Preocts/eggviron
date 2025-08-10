@@ -1,6 +1,6 @@
 [build-system]
-requires = [ "setuptools>=64", "setuptools_scm>=8" ]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
 
 [project]
 name = "eggviron"
@@ -18,23 +18,31 @@ classifiers = [
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: Implementation :: CPython",
 ]
-dynamic = [ "dependencies", "optional-dependencies", "version" ]
+dynamic = ["version"]
+dependencies = []
 
-[tool.setuptools_scm]
-# Purposely left empty
-
-[tool.setuptools.dynamic.dependencies]
-file = [ "requirements/requirements.txt" ]
-
-[tool.setuptools.dynamic.optional-dependencies]
-dev = { file = [ "requirements/requirements-dev.txt" ] }
-test = { file = [ "requirements/requirements-test.txt" ] }
+[dependency-groups]
+format = [
+    "black",
+    "isort",
+]
+lint = [
+    "flake8",
+    "flake8-builtins",
+    "flake8-pep585",
+    "mypy",
+]
+test = [
+    "pytest",
+    "pytest-randomly",
+    "coverage",
+]
 
 [project.urls]
 homepage = "https://github.com/Preocts/eggviron"
 
-[tool.setuptools.package-data]
-"eggviron" = [ "py.typed" ]
+[tool.hatch.version]
+source = "vcs"
 
 [tool.mypy]
 check_untyped_defs = true
@@ -57,7 +65,7 @@ source = [ "tests" ]
 source_pkgs = [ "eggviron" ]
 
 [tool.coverage.paths]
-source = [ "src/", "*/site-packages" ]
+source = [ "src/", "*/site-packages" , "*/src"]
 test = [ "tests/", "*/tests" ]
 
 [tool.coverage.report]

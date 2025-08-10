@@ -1,4 +1,4 @@
-[⚠️ Suspicious Content] # Contributing
+# Contributing
 
 Before contributing, please either ask to claim an existing open issue or create
 a new issue to discuss your proposed changes with the owner(s) of this repo
@@ -42,79 +42,80 @@ The following steps outline how to install this repo for local development.
 
 ## Prerequisites
 
-### Clone repo
+### [Install uv](https://docs.astral.sh/uv/getting-started/installation/)
 
-```bash
-git clone https://github.com/[ORG NAME]/[REPO NAME]
-
-cd [REPO NAME]
-```
-
-### [Install nox](https://nox.thea.codes/en/stable/index.html)
-
-It is recommended to use a tool such as `pipx` or `uvx` to install nox. nox is
-needed to run the provided sessions for developer setup, linting, tests, and
-dependency management. It is optional, but these instructions will not cover
-manually steps outside of nox.
-
+uv is required to use the provided noxfile sessions for developer setup,
+linting, and tests. Using nox is completely optional, all sessions can be
+manually recreated. These instructions will not cover those cases.
 
 ## Nox Sessions
 
 ### Developer Install
 
-This builds the `/.venv`, installs the editable
-package, and installs all dependency files.
+This builds the `/.venv`, installs the editable package, and installs
+pre-commit.
 
-```bash
-nox -s dev
+```console
+uvx nox -s dev
 ```
 
-### Run tests with coverage
+### Validate uv.lock
 
-```bash
-nox -s test
+```console
+uvx nox -s lock
 ```
 
-### Run formatters and linters
+### Run tests and display coverage
 
-```bash
-nox -s lint
+```console
+uvx nox -s test
+```
+
+Passing extra arguements to pytest:
+
+```console
+uvx nox -s test -- -vvv -x --full-trace
+```
+
+### Run linters
+
+```console
+uvx nox -s lint
+```
+
+### Run formatters
+
+```console
+uvx nox -s format
+```
+
+### Run all checks
+
+```console
+uvx nox
 ```
 
 ### Build dist
 
-```bash
-nox -s build
+```console
+uvx nox -s build
 ```
 
 ---
 
 ## Updating dependencies
 
-New dependencys can be added to the `requirements-*.txt` file. It is recommended
-to only use pins when specific versions or upgrades beyond a certain version are
-to be avoided. Otherwise, allow `pip-compile` to manage the pins in the
-generated `constraints.txt` file.
+New dependencies should be added with the uv cli command `uv add
+[package-name]`. This will ensure the `uv.lock` file is updated as well.
 
-Once updated following the steps below, the package can be installed if needed.
+### Upgrade an existing package to latest
 
-### Update the generated files with changes
-
-```bash
-nox -s update-deps
+```console
+uvx nox -s upgrade-package -- package-name
 ```
 
-### Upgrade all generated dependencies
+### Upgrade all packages to latest
 
-```bash
-nox -s upgrade-deps
+```console
+uvx nox -s upgrade
 ```
-
----
-
-## [pre-commit](https://pre-commit.com)
-
-> A framework for managing and maintaining multi-language pre-commit hooks.
-
-This repo is setup with a `.pre-commit-config.yaml` with the expectation that
-any code submitted for review already passes all selected pre-commit checks.
