@@ -147,6 +147,11 @@ name = "eggviron"
 source = { editable = "." }
 
 [package.dev-dependencies]
+dev = [
+    { name = "coverage" },
+    { name = "pytest" },
+    { name = "pytest-randomly" },
+]
 format = [
     { name = "black" },
     { name = "isort" },
@@ -156,16 +161,16 @@ lint = [
     { name = "flake8-builtins" },
     { name = "flake8-pep585" },
     { name = "mypy" },
-]
-test = [
-    { name = "coverage" },
-    { name = "pytest" },
-    { name = "pytest-randomly" },
 ]
 
 [package.metadata]
 
 [package.metadata.requires-dev]
+dev = [
+    { name = "coverage" },
+    { name = "pytest" },
+    { name = "pytest-randomly" },
+]
 format = [
     { name = "black" },
     { name = "isort" },
@@ -175,11 +180,6 @@ lint = [
     { name = "flake8-builtins" },
     { name = "flake8-pep585" },
     { name = "mypy" },
-]
-test = [
-    { name = "coverage" },
-    { name = "pytest" },
-    { name = "pytest-randomly" },
 ]
 
 [[package]]
