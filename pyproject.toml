@@ -44,6 +44,9 @@ homepage = "https://github.com/Preocts/eggviron"
 [tool.hatch.version]
 source = "vcs"
 
+[tool.black]
+line-length = 100
+
 [tool.mypy]
 check_untyped_defs = true
 disallow_any_generics = true
