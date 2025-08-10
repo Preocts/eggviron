@@ -65,7 +65,7 @@ source = [ "tests" ]
 source_pkgs = [ "eggviron" ]
 
 [tool.coverage.paths]
-source = [ "src/", "*/site-packages" ]
+source = [ "src/", "*/site-packages" , "*/src"]
 test = [ "tests/", "*/tests" ]
 
 [tool.coverage.report]
