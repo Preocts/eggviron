@@ -4,7 +4,7 @@ import os
 
 import pytest
 
-from eggviron.environ_loader import EnvironLoader
+from eggviron._environ_loader import EnvironLoader
 
 
 @pytest.fixture(autouse=True)
