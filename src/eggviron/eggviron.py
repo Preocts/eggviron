@@ -78,7 +78,7 @@ class Eggviron:
 
         Keyword Args:
             raise_on_overwrite: If True a KeyError will be raised when an existing key
-            is overwritten by an assignment or load() action.
+                is overwritten by an assignment or load() action.
         """
         self._strict = raise_on_overwrite
         self._loaded_values: dict[str, str] = {}
