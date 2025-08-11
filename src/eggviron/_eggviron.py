@@ -126,12 +126,15 @@ class Eggviron:
 
         self._loaded_values[key] = value
 
-    def load(self, *loader: Loader) -> None:
+    def load(self, *loader: Loader) -> Eggviron:
         """
         Use a loader to update the loaded values. Loaders are used in the order provided.
 
         Args:
             loader: The loader classes to use. More than one can be provided.
+
+        Returns:
+            Eggviron: The mutated instance of self.
         """
         for _loader in loader:
             if self._strict:
@@ -142,6 +145,8 @@ class Eggviron:
                     raise KeyError(msg)
 
             self._loaded_values.update(_loader.run())
+
+        return self
 
     @_handle_exception(str)
     def get(self, key: str, default: str | None = None) -> str:
