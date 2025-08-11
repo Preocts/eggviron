@@ -7,7 +7,7 @@ from collections.abc import Generator
 
 import pytest
 
-from eggviron.envfile_loader import EnvFileLoader
+from eggviron._envfile_loader import EnvFileLoader
 
 VALID_ENV_FILE = r"""
 simple=value
