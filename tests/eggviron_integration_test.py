@@ -29,11 +29,11 @@ def create_file(contents: str) -> Generator[str, None, None]:
 def test_integration_of_local_loaders() -> None:
     """All loaders that do not require external IO calls."""
     env_file = "from_file=file_value"
-    os.environ["from_environ"] = "environ_value"
+    os.environ["FROM_ENVIRON"] = "environ_value"
 
     with create_file(env_file) as filepath:
 
         environ = Eggviron().load(EnvFileLoader(filepath), EnvironLoader())
 
     assert environ["from_file"] == "file_value"
-    assert environ["from_environ"] == "environ_value"
+    assert environ["FROM_ENVIRON"] == "environ_value"
