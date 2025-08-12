@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+
 import pytest
 
 from eggviron import Eggviron
@@ -120,6 +122,44 @@ def test_load_with_multiple_loaders_not_strict() -> None:
     assert values["luz"] == "good witch"
     assert values["owl"] == "lady"
     assert values["boiling"] == "sea"
+
+
+def test_loader_mutates_environ() -> None:
+    """By default, Eggviron will mutate the os.environ as it changes"""
+    carton = Eggviron()
+    loader = MockLoader({"luz": "human"})
+
+    carton.load(loader)
+
+    assert os.getenv("luz") == "human"
+
+
+def test_setitem_mutates_environ() -> None:
+    """By default, Eggviron will mutate the os.environ as it changes"""
+    carton = Eggviron()
+
+    carton["owl"] = "lady"
+
+    assert os.getenv("owl") == "lady"
+
+
+def test_loader_does_not_mutate_environ() -> None:
+    """Eggviron will not mutate the os.environ when flag is flipped"""
+    carton = Eggviron(mutate_environ=False)
+    loader = MockLoader({"luz": "human"})
+
+    carton.load(loader)
+
+    assert "luz" not in os.environ
+
+
+def test_setitem_does_not_mutate_environ() -> None:
+    """Eggviron will not mutate the os.environ when flag is flipped"""
+    carton = Eggviron(mutate_environ=False)
+
+    carton["owl"] = "lady"
+
+    assert "owl" not in os.environ
 
 
 @pytest.mark.parametrize(
