@@ -137,14 +137,15 @@ class Eggviron:
             Eggviron: The mutated instance of self.
         """
         for _loader in loader:
+            results = _loader.run()
+
             if self._strict:
-                results = _loader.run()
                 conflicts = [key for key in results if key in self._loaded_values]
                 if conflicts:
                     msg = f"Key '{conflicts[0]}' already exists. Offending loader: '{_loader.name}'"
                     raise KeyError(msg)
 
-            self._loaded_values.update(_loader.run())
+            self._loaded_values.update(results)
 
         return self
 
