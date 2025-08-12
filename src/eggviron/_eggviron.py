@@ -151,6 +151,9 @@ class Eggviron:
         if self._mutate:
             os.environ.pop(key, None)
 
+    def __contains__(self, key: str) -> bool:
+        return key in self._loaded_values
+
     def load(self, *loader: Loader) -> Eggviron:
         """
         Use a loader to update the loaded values. Loaders are used in the order provided.
