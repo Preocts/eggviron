@@ -101,6 +101,13 @@ def test_set_item_raises_key_error_on_overwrite(carton: Eggviron) -> None:
         carton["foo"] = "baz"
 
 
+def test_del_item(carton: Eggviron) -> None:
+    """Remove an existing item on del keyword use."""
+    del carton["foo"]
+
+    assert "foo" not in carton.loaded_values
+
+
 def test_load_with_multiple_loaders_strict_raises(carton: Eggviron) -> None:
     # In strict mode (default) conflicting keys should raise
     loader_one = MockLoader({"luz": "human"})
@@ -143,6 +150,16 @@ def test_setitem_mutates_environ() -> None:
     assert os.getenv("owl") == "lady"
 
 
+def test_delitem_mutates_environ() -> None:
+    """By default, Eggviron will mutate the os.environ as it changes"""
+    carton = Eggviron()
+    carton["owl"] = "lady"
+
+    del carton["owl"]
+
+    assert "owl" not in os.environ
+
+
 def test_loader_does_not_mutate_environ() -> None:
     """Eggviron will not mutate the os.environ when flag is flipped"""
     carton = Eggviron(mutate_environ=False)
@@ -160,6 +177,18 @@ def test_setitem_does_not_mutate_environ() -> None:
     carton["owl"] = "lady"
 
     assert "owl" not in os.environ
+
+
+def test_delitem_does_not_mutate_environ() -> None:
+    """Eggviron will not mutate the os.environ when flag is flipped"""
+    carton = Eggviron(mutate_environ=False)
+    os.environ["owl"] = "lady"
+    carton["owl"] = "lady"
+
+    del carton["owl"]
+
+    assert "owl" not in carton.loaded_values
+    assert "owl" in os.environ
 
 
 @pytest.mark.parametrize(

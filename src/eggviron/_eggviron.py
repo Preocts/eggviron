@@ -133,6 +133,24 @@ class Eggviron:
         if self._mutate:
             os.environ[key] = value
 
+    def __delitem__(self, key: str) -> None:
+        """
+        Delete a value assign to a key. The key must exist.
+
+        Args:
+            key: Key index of the value to delete
+
+        Returns:
+            None
+
+        Raises:
+            KeyError: If key does not exist
+        """
+        del self._loaded_values[key]
+
+        if self._mutate:
+            os.environ.pop(key, None)
+
     def load(self, *loader: Loader) -> Eggviron:
         """
         Use a loader to update the loaded values. Loaders are used in the order provided.
