@@ -123,7 +123,7 @@ def test_del_item(carton: Eggviron) -> None:
     """Remove an existing item on del keyword use."""
     del carton["foo"]
 
-    assert "foo" not in carton.loaded_values
+    assert "foo" not in carton
 
 
 def test_delitem_mutates_environ() -> None:
@@ -144,7 +144,7 @@ def test_delitem_does_not_mutate_environ() -> None:
 
     del carton["owl"]
 
-    assert "owl" not in carton.loaded_values
+    assert "owl" not in carton
     assert "owl" in os.environ
 
 
