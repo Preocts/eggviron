@@ -63,7 +63,7 @@ UV_ARGS = [
 @nox.session(name="dev", python=False)
 def dev_session(session: nox.Session) -> None:
     """Create a development environment."""
-    session.run_install("uv", "sync")
+    session.run_install("uv", "sync", "--all-extras")
 
 
 @nox.session(name="test", python=False)

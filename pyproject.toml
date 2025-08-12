@@ -36,6 +36,12 @@ dev = [
     "pytest",
     "pytest-randomly",
     "coverage",
+    "types-boto3[ssm]",
+]
+
+[project.optional-dependencies]
+aws = [
+    "boto3",
 ]
 
 [project.urls]
