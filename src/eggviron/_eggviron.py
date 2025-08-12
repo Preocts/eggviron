@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import contextlib
+import os
 from collections.abc import Generator
 from typing import TYPE_CHECKING
 
@@ -72,15 +73,18 @@ def _validate_default_type(obj: object | None, _type: type) -> None:
 class Eggviron:
     """A key-value store optionally loaded from the local environment and other sources."""
 
-    def __init__(self, *, raise_on_overwrite: bool = True) -> None:
+    def __init__(self, *, raise_on_overwrite: bool = True, mutate_environ: bool = True) -> None:
         """
         Create an empty Eggviron.
 
         Keyword Args:
             raise_on_overwrite: If True a KeyError will be raised when an existing key
                 is overwritten by an assignment or load() action.
+            mutate_environ: If True then the os.environ values are mutated when .load()
+                is run or Eggviron is updated.
         """
         self._strict = raise_on_overwrite
+        self._mutate = mutate_environ
         self._loaded_values: dict[str, str] = {}
 
     @property
@@ -126,9 +130,14 @@ class Eggviron:
 
         self._loaded_values[key] = value
 
+        if self._mutate:
+            os.environ[key] = value
+
     def load(self, *loader: Loader) -> Eggviron:
         """
         Use a loader to update the loaded values. Loaders are used in the order provided.
+
+        Key:value pairs are added to os.environ after each loader is run.
 
         Args:
             loader: The loader classes to use. More than one can be provided.
@@ -146,6 +155,10 @@ class Eggviron:
                     raise KeyError(msg)
 
             self._loaded_values.update(results)
+
+        if self._mutate:
+            for key, value in results.items():
+                os.environ[key] = value
 
         return self
 
