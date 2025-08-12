@@ -1,6 +1,5 @@
 name: "python tests and coverage"
 # Uses:
-# https://github.com/actions/setup-python : v5.6.0 a26af69be951a213d495a4c3e4e4022e16d87065
 # https://github.com/actions/checkout : v4.2.2 11bd71901bbe5b1630ceea73d27597364c9af683
 # https://github.com/actions/download-artifact : v5.0.0 634f93cb2916e3fdff6788551b99b062d0335ce0
 # https://github.com/actions/upload-artifact : v4.6.2 ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -14,29 +13,15 @@ on:
     branches:
       - "main"
 
-env:
-  UV_PYTHON_PREFERENCE: "only-system"
-
 jobs:
-  settings:
-    runs-on: "ubuntu-latest"
-    name: "Define workflow settings"
-    steps:
-      - name: "Repo checkout"
-        uses: "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683"
-
-      - name: "Define settings"
-        run: |
-          echo "python_version=$(<.python-version)" >> $GITHUB_OUTPUT
-
   run-tests-and-coverage:
     name: "Run nox for tests and coverage"
-    needs: "settings"
     runs-on: "${{ matrix.os }}"
     strategy:
       fail-fast: false
       matrix:
         os:
+          # - "macos-latest"
           - "windows-latest"
           - "ubuntu-latest"
         python-version:
@@ -50,12 +35,6 @@ jobs:
       - name: "Repo checkout"
         uses: "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683"
 
-      - name: "Set up Python ${{ matrix.python-version }}"
-        uses: "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065"
-        with:
-          python-version: "${{ matrix.python-version }}"
-          allow-prereleases: true
-
       - name: "Install the latest version of uv"
         uses: "astral-sh/setup-uv@e92bafb6253dcd438e0484186d7669ea7a8ca1cc"
         with:
@@ -64,7 +43,7 @@ jobs:
           enable-cache: true
 
       - name: "Run tests and coverage via nox"
-        run: "uvx nox --session test -- partial-coverage no-config"
+        run: "uvx nox --session test -- partial-coverage"
 
       - name: "Save coverage artifact"
         uses: "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
@@ -82,16 +61,10 @@ jobs:
       - name: "Repo checkout"
         uses: "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683"
 
-      - name: "Set up Python"
-        uses: "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065"
-        with:
-          python-version: ${{ steps.settings.outputs.python_version }}
-
       - name: "Install the latest version of uv"
         uses: "astral-sh/setup-uv@e92bafb6253dcd438e0484186d7669ea7a8ca1cc"
         with:
           version: "latest"
-          python-version: ${{ steps.settings.outputs.python_version }}
           enable-cache: true
 
       - name: "Download coverage artifacts"
@@ -103,30 +76,28 @@ jobs:
       - name: "Compile coverage data"
         run: "uvx nox --session combine"
 
-      - name: "Post summary to step summary."
+      - name: "Post summary to step summary"
         run: |
+          export COVERAGE_REQUIRED=$(<.required-coverage)
           export TOTAL=$(python -c "import json;print(json.load(open('coverage.json'))['totals']['percent_covered_display'])")
           echo "TOTAL=$TOTAL" >> $GITHUB_ENV
+          echo "### Minimum coverage required: ${COVERAGE_REQUIRED}%" >> $GITHUB_STEP_SUMMARY
           echo "### Total coverage: ${TOTAL}%" >> $GITHUB_STEP_SUMMARY
+          if [ ${COVERAGE_REQUIRED} -gt $TOTAL ]; then
+            exit 1
+          fi
 
   linters-and-formatters:
     name: "linters and formatters"
-    needs: "settings"
     runs-on: "ubuntu-latest"
     steps:
       - name: "Repo checkout"
         uses: "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683"
 
-      - name: "Set up Python"
-        uses: "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065"
-        with:
-          python-version: ${{ steps.settings.outputs.python_version }}
-
       - name: "Install the latest version of uv"
         uses: "astral-sh/setup-uv@e92bafb6253dcd438e0484186d7669ea7a8ca1cc"
         with:
           version: "latest"
-          python-version: ${{ steps.settings.outputs.python_version }}
           enable-cache: true
 
       - name: "Run linters and formatters"
