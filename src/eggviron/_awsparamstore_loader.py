@@ -7,8 +7,16 @@ Load parameter store values from an AWS Parameter Store (SSM)
 
 from __future__ import annotations
 
+import dataclasses
 import logging
 from typing import overload
+@dataclasses.dataclass(slots=True)
+class AWSParamStoreException(Exception):
+    """Exception raised by AWSParamStore."""
+
+    message: str
+
+
 class AWSParamStore:
     """Load parameter store value(s) from AWS Parameter Store (SSM)."""
 
