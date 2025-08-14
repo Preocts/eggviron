@@ -101,6 +101,7 @@ def combine_coverage(session: nox.Session) -> None:
 
     coverage = functools.partial(session.run, "uv", "run", *UV_ARGS, "coverage")
 
+    coverage("combine")
     coverage("report", "--show-missing")
     coverage("html")
     coverage("json")
