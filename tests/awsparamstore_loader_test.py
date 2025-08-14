@@ -3,6 +3,7 @@ from __future__ import annotations
 import pytest
 
 from eggviron import AWSParamStore
+from eggviron import AWSParamStoreException
 
 
 def test_init() -> None:
@@ -34,3 +35,17 @@ def test_init_without_path_or_name_raises() -> None:
     with pytest.raises(ValueError, match=pattern):
         AWSParamStore()  # type: ignore
 
+
+def test_run_raises_without_region() -> None:
+    """When the region is not defined an exception is raised."""
+
+    with pytest.raises(AWSParamStoreException):
+        AWSParamStore(parameter_name="/foo/bar").run()
+
+
+def test_run_with_region() -> None:
+    """WIP"""
+
+    result = AWSParamStore(parameter_name="/foo/bar", aws_region="us-east-2").run()
+
+    assert result == {}

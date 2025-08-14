@@ -10,6 +10,11 @@ from __future__ import annotations
 import dataclasses
 import logging
 from typing import overload
+
+import boto3
+from botocore.exceptions import BotoCoreError
+
+
 @dataclasses.dataclass(slots=True)
 class AWSParamStoreException(Exception):
     """Exception raised by AWSParamStore."""
@@ -84,3 +89,13 @@ class AWSParamStore:
         if error_msg:
             raise ValueError(error_msg)
 
+    def run(self) -> dict[str, str]:
+        """Fetch values from AWS Parameter store."""
+        # TODO: Capture exceptions, wrap them in library exceptions
+        try:
+            boto3.client("ssm", region_name=self._aws_region)
+
+        except BotoCoreError as err:
+            raise AWSParamStoreException(err.fmt)
+
+        return {}
