@@ -74,18 +74,22 @@ def run_tests_with_coverage(session: nox.Session) -> None:
         uv_args = UV_ARGS + [f"--python={os.environ['UV_PYTHON']}"]
 
     partial = "partial-coverage" in session.posargs
-
-    session.run_install("uv", "sync", "--all-extras", *uv_args)
-
-    coverage = functools.partial(session.run, "uv", "run", *uv_args, "coverage")
-
-    coverage("erase")
-
     if partial:
         session.posargs.remove("partial-coverage")
-        coverage("run", "--parallel-mode", "--module", "pytest", *session.posargs)
-    else:
-        coverage("run", "--module", "pytest", *session.posargs)
+
+    # Run tests without extras installed
+    session.run_install("uv", "sync", *uv_args)
+
+    coverage = functools.partial(session.run, "uv", "run", *uv_args, "coverage")
+    coverage("erase")
+    coverage("run", "--parallel-mode", "--module", "pytest", *session.posargs)
+
+    # Add all extras and re-run tests
+    session.run_install("uv", "sync", "--all-extras", *uv_args)
+    coverage("run", "--parallel-mode", "--module", "pytest", *session.posargs)
+
+    if not partial:
+        coverage("combine")
         coverage("report", "--show-missing")
         coverage("html")
 
@@ -97,7 +101,6 @@ def combine_coverage(session: nox.Session) -> None:
 
     coverage = functools.partial(session.run, "uv", "run", *UV_ARGS, "coverage")
 
-    coverage("combine")
     coverage("report", "--show-missing")
     coverage("html")
     coverage("json")

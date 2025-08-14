@@ -11,8 +11,14 @@ import dataclasses
 import logging
 from typing import overload
 
-import boto3
-from botocore.exceptions import BotoCoreError
+try:
+    import boto3
+    from botocore.exceptions import BotoCoreError
+
+    _NO_BOTO3 = False
+
+except ImportError:
+    _NO_BOTO3 = True
 
 
 @dataclasses.dataclass(slots=True)
@@ -77,7 +83,11 @@ class AWSParamStore:
 
         error_msg = ""
 
-        if not self._parameter_path and not self._parameter_name:
+        if _NO_BOTO3:
+            error_msg = "boto3 not installed. Install the 'aws' extra to use AWSParamStore."
+            raise AWSParamStoreException(error_msg)
+
+        elif not self._parameter_path and not self._parameter_name:
             error_msg = "A valid parameter name or path is required."
 
         elif self._parameter_path and not self._parameter_path.endswith("/"):
