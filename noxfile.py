@@ -63,7 +63,7 @@ UV_ARGS = [
 @nox.session(name="dev", python=False)
 def dev_session(session: nox.Session) -> None:
     """Create a development environment."""
-    session.run_install("uv", "sync")
+    session.run_install("uv", "sync", "--all-extras")
 
 
 @nox.session(name="test", python=False)
@@ -74,18 +74,22 @@ def run_tests_with_coverage(session: nox.Session) -> None:
         uv_args = UV_ARGS + [f"--python={os.environ['UV_PYTHON']}"]
 
     partial = "partial-coverage" in session.posargs
+    if partial:
+        session.posargs.remove("partial-coverage")
 
+    # Run tests without extras installed
     session.run_install("uv", "sync", *uv_args)
 
     coverage = functools.partial(session.run, "uv", "run", *uv_args, "coverage")
-
     coverage("erase")
+    coverage("run", "--parallel-mode", "--module", "pytest", *session.posargs)
 
-    if partial:
-        session.posargs.remove("partial-coverage")
-        coverage("run", "--parallel-mode", "--module", "pytest", *session.posargs)
-    else:
-        coverage("run", "--module", "pytest", *session.posargs)
+    # Add all extras and re-run tests
+    session.run_install("uv", "sync", "--all-extras", *uv_args)
+    coverage("run", "--parallel-mode", "--module", "pytest", *session.posargs)
+
+    if not partial:
+        coverage("combine")
         coverage("report", "--show-missing")
         coverage("html")
 
@@ -93,7 +97,7 @@ def run_tests_with_coverage(session: nox.Session) -> None:
 @nox.session(name="combine", python=False)
 def combine_coverage(session: nox.Session) -> None:
     """Combine parallel-mode coverage files and produce reports."""
-    session.run_install("uv", "sync", *UV_ARGS)
+    session.run_install("uv", "sync", "--all-extras", *UV_ARGS)
 
     coverage = functools.partial(session.run, "uv", "run", *UV_ARGS, "coverage")
 
@@ -106,7 +110,7 @@ def combine_coverage(session: nox.Session) -> None:
 @nox.session(name="lint", python=False)
 def run_linters(session: nox.Session) -> None:
     """Run code linters, and type checking against all files."""
-    session.run_install("uv", "sync", "--group", "lint", *UV_ARGS)
+    session.run_install("uv", "sync", "--all-extras", "--group", "lint", *UV_ARGS)
 
     for linter_args in LINTERS:
         session.run("uv", "run", *UV_ARGS, *linter_args)
@@ -115,7 +119,7 @@ def run_linters(session: nox.Session) -> None:
 @nox.session(name="format", python=False)
 def run_formatters(session: nox.Session) -> None:
     """Run code formatters against all files."""
-    session.run_install("uv", "sync", "--group", "format", *UV_ARGS)
+    session.run_install("uv", "sync", "--all-extras", "--group", "format", *UV_ARGS)
 
     for formatter_args in FORMATTERS:
         session.run("uv", "run", *UV_ARGS, *formatter_args)
