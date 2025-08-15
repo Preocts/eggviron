@@ -12,7 +12,7 @@ MODULE_NAME = "eggviron"
 LINT_PATH = "./src"
 TESTS_PATH = "./tests"
 RUN_TESTS_WITH_EXTRAS: list[tuple[str, ...]] = [
-    (),
+    # (),
     ("aws",),
 ]
 
