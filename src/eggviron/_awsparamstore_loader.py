@@ -94,7 +94,7 @@ class AWSParamStore:
         parameter_name: str | None = None,
         aws_region: str | None = None,
     ) -> None:
-        self._parameter_path = parameter_path or parameter_name
+        self._parameter_path = parameter_path or parameter_name or ""
         self._aws_region = aws_region
 
         error_msg = ""
