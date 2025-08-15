@@ -41,6 +41,15 @@ def test_init_with_incorrect_parameter_name_raises() -> None:
 
 
 @pytest.mark.skipif(SKIP_BOTO, reason="boto3 not installed")
+def test_init_with_invalid_parameter_raises() -> None:
+    """Raise a ValueError if the parameter does not start with '/'"""
+    pattern = "The given parameter '.+' must start with"
+
+    with pytest.raises(ValueError, match=pattern):
+        AWSParamStore(parameter_name="foo/bar/")
+
+
+@pytest.mark.skipif(SKIP_BOTO, reason="boto3 not installed")
 def test_init_without_path_or_name_raises() -> None:
     """One of the two values are required."""
     pattern = "A valid parameter name or path is required"
