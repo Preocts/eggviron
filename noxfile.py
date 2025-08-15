@@ -11,6 +11,11 @@ import nox
 MODULE_NAME = "eggviron"
 LINT_PATH = "./src"
 TESTS_PATH = "./tests"
+RUN_TESTS_WITH_EXTRAS: list[tuple[str, ...]] = [
+    (),
+    ("aws",),
+]
+
 
 # What we allowed to clean (delete)
 CLEANABLE_TARGETS = [
@@ -77,16 +82,16 @@ def run_tests_with_coverage(session: nox.Session) -> None:
     if partial:
         session.posargs.remove("partial-coverage")
 
-    # Run tests without extras installed
-    session.run_install("uv", "sync", *uv_args)
-
     coverage = functools.partial(session.run, "uv", "run", *uv_args, "coverage")
     coverage("erase")
-    coverage("run", "--parallel-mode", "--module", "pytest", *session.posargs)
 
-    # Add all extras and re-run tests
-    session.run_install("uv", "sync", "--all-extras", *uv_args)
-    coverage("run", "--parallel-mode", "--module", "pytest", *session.posargs)
+    for extras in RUN_TESTS_WITH_EXTRAS or [()]:
+        extra_args = []
+        for _extra in extras:
+            extra_args.extend(["--extra", _extra])
+
+        session.run_install("uv", "sync", *extra_args, *uv_args)
+        coverage("run", "--parallel-mode", "--module", "pytest", *session.posargs)
 
     if not partial:
         coverage("combine")
