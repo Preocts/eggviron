@@ -14,6 +14,7 @@ from typing import overload
 try:
     import boto3
     from botocore.exceptions import BotoCoreError
+    from botocore.exceptions import ClientError
 
     _NO_BOTO3 = False
 
@@ -26,6 +27,24 @@ class AWSParamStoreException(Exception):
     """Exception raised by AWSParamStore."""
 
     message: str
+    code: str | None = None
+    request_id: str | None = None
+    host_id: str | None = None
+    http_status_code: int | None = None
+    http_headers: dict[str, str] = dataclasses.field(default_factory=dict)
+    retry_attempts: int | None = None
+
+    @classmethod
+    def from_clienterror(cls, err: ClientError) -> AWSParamStoreException:
+        return cls(
+            message=err.response["Error"]["Message"],
+            code=err.response["Error"]["Code"],
+            request_id=err.response["ResponseMetadata"]["RequestId"],
+            host_id=err.response["ResponseMetadata"]["HostId"],
+            http_status_code=err.response["ResponseMetadata"]["HTTPStatusCode"],
+            http_headers=err.response["ResponseMetadata"]["HTTPHeaders"],
+            retry_attempts=err.response["ResponseMetadata"]["RetryAttempts"],
+        )
 
 
 class AWSParamStore:
@@ -103,10 +122,11 @@ class AWSParamStore:
 
     def run(self) -> dict[str, str]:
         """Fetch values from AWS Parameter store."""
-        # TODO: Capture exceptions, wrap them in library exceptions
         try:
             boto3.client("ssm", region_name=self._aws_region)
 
+        except ClientError as err:
+            raise AWSParamStoreException.from_clienterror(err)
         except BotoCoreError as err:
             raise AWSParamStoreException(err.fmt)
 
