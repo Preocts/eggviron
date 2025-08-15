@@ -11,21 +11,38 @@ import dataclasses
 import logging
 from typing import overload
 
-try:
-    import boto3
-    from botocore.exceptions import BotoCoreError
-
-    _NO_BOTO3 = False
-
-except ImportError:
-    _NO_BOTO3 = True
-
 
 @dataclasses.dataclass(slots=True)
 class AWSParamStoreException(Exception):
     """Exception raised by AWSParamStore."""
 
     message: str
+    code: str | None = None
+    request_id: str | None = None
+    http_status_code: int | None = None
+    http_headers: dict[str, str] = dataclasses.field(default_factory=dict)
+    retry_attempts: int | None = None
+
+    @classmethod
+    def from_clienterror(cls, err: ClientError) -> AWSParamStoreException:
+        return cls(
+            message=err.response["Error"]["Message"],
+            code=err.response["Error"]["Code"],
+            request_id=err.response["ResponseMetadata"]["RequestId"],
+            http_status_code=err.response["ResponseMetadata"]["HTTPStatusCode"],
+            http_headers=err.response["ResponseMetadata"]["HTTPHeaders"],
+            retry_attempts=err.response["ResponseMetadata"]["RetryAttempts"],
+        )
+
+
+try:
+    import boto3
+    from botocore.exceptions import BotoCoreError
+    from botocore.exceptions import ClientError
+
+except ImportError:  # pragma: no cover
+    error_msg = "boto3 not installed. Install the 'aws' extra to use AWSParamStore."
+    raise AWSParamStoreException(error_msg)
 
 
 class AWSParamStore:
@@ -77,16 +94,12 @@ class AWSParamStore:
         parameter_name: str | None = None,
         aws_region: str | None = None,
     ) -> None:
-        self._parameter_path = parameter_path or parameter_name
+        self._parameter_path = parameter_path or parameter_name or ""
         self._aws_region = aws_region
 
         error_msg = ""
 
-        if _NO_BOTO3:
-            error_msg = "boto3 not installed. Install the 'aws' extra to use AWSParamStore."
-            raise AWSParamStoreException(error_msg)
-
-        elif not parameter_path and not parameter_name:
+        if not parameter_path and not parameter_name:
             error_msg = "A valid parameter name or path is required."
 
         elif parameter_path and not parameter_path.endswith("/"):
@@ -103,10 +116,13 @@ class AWSParamStore:
 
     def run(self) -> dict[str, str]:
         """Fetch values from AWS Parameter store."""
-        # TODO: Capture exceptions, wrap them in library exceptions
         try:
-            boto3.client("ssm", region_name=self._aws_region)
+            client = boto3.client("ssm", region_name=self._aws_region)
 
+            client.get_parameter(Name=self._parameter_path)
+
+        except ClientError as err:
+            raise AWSParamStoreException.from_clienterror(err)
         except BotoCoreError as err:
             raise AWSParamStoreException(err.fmt)
 
