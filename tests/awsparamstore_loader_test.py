@@ -1,28 +1,37 @@
 from __future__ import annotations
 
+from collections.abc import Generator
+
 import pytest
+from moto import mock_aws
 
 from eggviron import AWSParamStore
 from eggviron import AWSParamStoreException
-from eggviron._awsparamstore_loader import _NO_BOTO3 as SKIP_BOTO
+
+boto3 = pytest.importorskip("boto3")
+
+DEFAULT_REGION = "us-east-2"
 
 
-@pytest.mark.skipif(not SKIP_BOTO, reason="boto3 installed")
-def test_init_without_boto3() -> None:
-    pattern = "boto3 not installed. Install the 'aws' extra to use AWSParamStore."
+@pytest.fixture
+def mock_ssm() -> Generator[None, None, None]:
+    """Mock the parameter store."""
+    with mock_aws():
+        client = boto3.client("ssm", DEFAULT_REGION)
+        client.put_parameter(Name="/biz/baz", Value="foo.bar", Type="String")
+        client.put_parameter(Name="/foo/bar", Value="foo.bar", Type="String")
+        client.put_parameter(Name="/foo/baz", Value="foo.baz", Type="SecureString")
+        client.put_parameter(Name="/foo/biz", Value="foo,bar", Type="StringList")
 
-    with pytest.raises(AWSParamStoreException, match=pattern):
-        AWSParamStore(parameter_name="/foo/bar")
+        yield None
 
 
-@pytest.mark.skipif(SKIP_BOTO, reason="boto3 not installed")
 def test_init_with_boto3() -> None:
     """Test valid inputs. No results expected."""
     AWSParamStore(parameter_name="/foo/bar")
     AWSParamStore(parameter_path="/foo/bar/")
 
 
-@pytest.mark.skipif(SKIP_BOTO, reason="boto3 not installed")
 def test_init_with_incorrect_parameter_path_raises() -> None:
     """Raise a ValueError if the parameter path doesn't end with /"""
     pattern = "Given parameter path '.+' but it looks like a parameter name"
@@ -31,7 +40,6 @@ def test_init_with_incorrect_parameter_path_raises() -> None:
         AWSParamStore(parameter_path="/foo/bar")
 
 
-@pytest.mark.skipif(SKIP_BOTO, reason="boto3 not installed")
 def test_init_with_incorrect_parameter_name_raises() -> None:
     """Raise a ValueError if the parameter name ends with a /"""
     pattern = "Given parameter name '.+' but it looks like a parameter path"
@@ -40,7 +48,6 @@ def test_init_with_incorrect_parameter_name_raises() -> None:
         AWSParamStore(parameter_name="/foo/bar/")
 
 
-@pytest.mark.skipif(SKIP_BOTO, reason="boto3 not installed")
 def test_init_with_invalid_parameter_raises() -> None:
     """Raise a ValueError if the parameter does not start with '/'"""
     pattern = "The given parameter '.+' must start with"
@@ -49,7 +56,6 @@ def test_init_with_invalid_parameter_raises() -> None:
         AWSParamStore(parameter_name="foo/bar/")
 
 
-@pytest.mark.skipif(SKIP_BOTO, reason="boto3 not installed")
 def test_init_without_path_or_name_raises() -> None:
     """One of the two values are required."""
     pattern = "A valid parameter name or path is required"
@@ -58,7 +64,6 @@ def test_init_without_path_or_name_raises() -> None:
         AWSParamStore()  # type: ignore
 
 
-@pytest.mark.skipif(SKIP_BOTO, reason="boto3 not installed")
 def test_run_raises_without_region() -> None:
     """When the region is not defined an exception is raised."""
 
@@ -66,10 +71,10 @@ def test_run_raises_without_region() -> None:
         AWSParamStore(parameter_name="/foo/bar").run()
 
 
-@pytest.mark.skipif(SKIP_BOTO, reason="boto3 not installed")
+@pytest.mark.usefixtures("mock_ssm")
 def test_run_with_region() -> None:
     """WIP"""
 
-    result = AWSParamStore(parameter_name="/foo/bar", aws_region="us-east-2").run()
+    result = AWSParamStore(parameter_name="/foo/bar", aws_region=DEFAULT_REGION).run()
 
     assert result == {}
