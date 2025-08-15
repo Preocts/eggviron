@@ -19,7 +19,6 @@ class AWSParamStoreException(Exception):
     message: str
     code: str | None = None
     request_id: str | None = None
-    host_id: str | None = None
     http_status_code: int | None = None
     http_headers: dict[str, str] = dataclasses.field(default_factory=dict)
     retry_attempts: int | None = None
@@ -30,7 +29,6 @@ class AWSParamStoreException(Exception):
             message=err.response["Error"]["Message"],
             code=err.response["Error"]["Code"],
             request_id=err.response["ResponseMetadata"]["RequestId"],
-            host_id=err.response["ResponseMetadata"]["HostId"],
             http_status_code=err.response["ResponseMetadata"]["HTTPStatusCode"],
             http_headers=err.response["ResponseMetadata"]["HTTPHeaders"],
             retry_attempts=err.response["ResponseMetadata"]["RetryAttempts"],
