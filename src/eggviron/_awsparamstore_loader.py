@@ -77,8 +77,7 @@ class AWSParamStore:
         parameter_name: str | None = None,
         aws_region: str | None = None,
     ) -> None:
-        self._parameter_path = parameter_path
-        self._parameter_name = parameter_name
+        self._parameter_path = parameter_path or parameter_name
         self._aws_region = aws_region
 
         error_msg = ""
@@ -87,14 +86,17 @@ class AWSParamStore:
             error_msg = "boto3 not installed. Install the 'aws' extra to use AWSParamStore."
             raise AWSParamStoreException(error_msg)
 
-        elif not self._parameter_path and not self._parameter_name:
+        elif not parameter_path and not parameter_name:
             error_msg = "A valid parameter name or path is required."
 
-        elif self._parameter_path and not self._parameter_path.endswith("/"):
-            error_msg = f"Given parameter path '{self._parameter_path}' but it looks like a parameter name. Did you forget and trailing '/'?"
+        elif parameter_path and not parameter_path.endswith("/"):
+            error_msg = f"Given parameter path '{parameter_path}' but it looks like a parameter name. Did you forget the trailing '/'?"
 
-        elif self._parameter_name and self._parameter_name.endswith("/"):
-            error_msg = f"Given parameter name '{self._parameter_name}' but it looks like a parameter path. Remove the trailing '/'"
+        elif parameter_name and parameter_name.endswith("/"):
+            error_msg = f"Given parameter name '{parameter_name}' but it looks like a parameter path. Remove the trailing '/'."
+
+        if self._parameter_path and not self._parameter_path.startswith("/"):
+            error_msg = f"Invalid parameter: The given parameter '{self._parameter_path}' must start with a '/' to be valid."
 
         if error_msg:
             raise ValueError(error_msg)
