@@ -72,9 +72,17 @@ def test_run_raises_without_region() -> None:
 
 
 @pytest.mark.usefixtures("mock_ssm")
-def test_run_with_region() -> None:
+def test_run_returns_parameter_by_name() -> None:
     """WIP"""
 
     result = AWSParamStore(parameter_name="/foo/bar", aws_region=DEFAULT_REGION).run()
 
     assert result == {}
+
+
+@pytest.mark.usefixtures("mock_ssm")
+def test_run_raises_exception_when_name_not_found() -> None:
+    """WIP"""
+
+    with pytest.raises(AWSParamStoreException):
+        AWSParamStore(parameter_name="/oo/bar", aws_region=DEFAULT_REGION).run()

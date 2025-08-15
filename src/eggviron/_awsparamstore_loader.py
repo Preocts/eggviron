@@ -117,7 +117,9 @@ class AWSParamStore:
     def run(self) -> dict[str, str]:
         """Fetch values from AWS Parameter store."""
         try:
-            boto3.client("ssm", region_name=self._aws_region)
+            client = boto3.client("ssm", region_name=self._aws_region)
+
+            client.get_parameter(Name=self._parameter_path)
 
         except ClientError as err:
             raise AWSParamStoreException.from_clienterror(err)
