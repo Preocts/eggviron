@@ -42,7 +42,7 @@ try:
     from botocore.exceptions import BotoCoreError
     from botocore.exceptions import ClientError
 
-except ImportError:
+except ImportError:  # pragma: no cover
     error_msg = "boto3 not installed. Install the 'aws' extra to use AWSParamStore."
     raise AWSParamStoreException(error_msg)
 
