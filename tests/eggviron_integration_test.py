@@ -33,7 +33,7 @@ def test_integration_of_local_loaders() -> None:
 
     with create_file(env_file) as filepath:
 
-        environ = Eggviron().load(EnvFileLoader(filepath), EnvironLoader())
+        environ = Eggviron().load(EnvironLoader(), EnvFileLoader(filepath))
 
     assert environ["from_file"] == "file_value"
     assert environ["FROM_ENVIRON"] == "environ_value"
