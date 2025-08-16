@@ -1,0 +1,107 @@
+interactions:
+- request:
+    body: '{"Path": "/foo/", "Recursive": false, "MaxResults": 1, "NextToken": ""}'
+    headers:
+      Content-Length:
+      - '71'
+      Content-Type:
+      - !!binary |
+        YXBwbGljYXRpb24veC1hbXotanNvbi0xLjE=
+      amz-sdk-invocation-id:
+      - !!binary |
+        Yzk1MmRiNTgtZDQzYi00M2M4LTk4ZjMtOWZiZjMxZDI5NGNi
+      amz-sdk-request:
+      - !!binary |
+        YXR0ZW1wdD0x
+    method: POST
+    uri: https://ssm.us-east-2.amazonaws.com/
+  response:
+    body:
+      string: '{"NextToken":"AAEAAXVa6HdUJHNMBxKMRG8pe7iLxlPNx6V1xj0gLOnXZygJAAAAAGigFH2hkMqeSIJDZvImM6FOyIXJFk8kA/NdiJVcc1nhFmNbaiNnn6J3mFkUBhMGGJ+dfaMC/fguoUUHls/TpXgBxU0JyKUhNujfmSJD3j/IJ1+SJpvpfj8nWrCkG6Q/qj/E57WkaD9ZcMwjKThS+V/Y8QBLzqoM9ApahdJDl8FtvpySGy4hLxdzsfKcY+9aiuEFqMYmpKVe/IQ4xYTCh2GSdmsng+CoClFr2FGt7WiMmaKp0B4U9DwvP7+9s+9ilCDAJt+K16kai00BA48SsubaQfz8esngrs0YvhsEENQ/+ZKW9oZYAkPaB6il37JQ64Ijrhaj+31WXJ4f/uBzp4tzCidwxqQfsw+1LHK7DnSl4rbtMrts+DqwJP0tm6OzsPmwmO/jJbWSvFlz+P48EGmi9RngKEmPKUL86MtazjfbiYYlhJgKNEo1sTfGZOp6Iupg9IYNtGkA+JY04djxg5srfzjByMuEB9zBSGDgQga4Cyg5Iv11JBQMiLiNF0JgJcB6I9t31NZLLXhYtQM9ninjLNi87JtXDSrbec/OOtl0nbkH9VMPHrqX+HXyCJu4BfI0bdURqYE1wIZ6Rx4a7O+lIyO7","Parameters":[{"ARN":"arn:aws:ssm:us-east-2:318341934254:parameter/foo/biz","DataType":"text","LastModifiedDate":1.755317527716E9,"Name":"/foo/biz","Type":"StringList","Value":"foo,biz","Version":1}]}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '872'
+      Content-Type:
+      - application/x-amz-json-1.1
+      Date:
+      - Sat, 16 Aug 2025 05:17:49 GMT
+      Server:
+      - Server
+      x-amzn-RequestId:
+      - c5197b20-0f18-4736-882c-fc44633ef6ba
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"Path": "/foo/", "Recursive": false, "MaxResults": 1, "NextToken": "AAEAAXVa6HdUJHNMBxKMRG8pe7iLxlPNx6V1xj0gLOnXZygJAAAAAGigFH2hkMqeSIJDZvImM6FOyIXJFk8kA/NdiJVcc1nhFmNbaiNnn6J3mFkUBhMGGJ+dfaMC/fguoUUHls/TpXgBxU0JyKUhNujfmSJD3j/IJ1+SJpvpfj8nWrCkG6Q/qj/E57WkaD9ZcMwjKThS+V/Y8QBLzqoM9ApahdJDl8FtvpySGy4hLxdzsfKcY+9aiuEFqMYmpKVe/IQ4xYTCh2GSdmsng+CoClFr2FGt7WiMmaKp0B4U9DwvP7+9s+9ilCDAJt+K16kai00BA48SsubaQfz8esngrs0YvhsEENQ/+ZKW9oZYAkPaB6il37JQ64Ijrhaj+31WXJ4f/uBzp4tzCidwxqQfsw+1LHK7DnSl4rbtMrts+DqwJP0tm6OzsPmwmO/jJbWSvFlz+P48EGmi9RngKEmPKUL86MtazjfbiYYlhJgKNEo1sTfGZOp6Iupg9IYNtGkA+JY04djxg5srfzjByMuEB9zBSGDgQga4Cyg5Iv11JBQMiLiNF0JgJcB6I9t31NZLLXhYtQM9ninjLNi87JtXDSrbec/OOtl0nbkH9VMPHrqX+HXyCJu4BfI0bdURqYE1wIZ6Rx4a7O+lIyO7"}'
+    headers:
+      Content-Length:
+      - '727'
+      Content-Type:
+      - !!binary |
+        YXBwbGljYXRpb24veC1hbXotanNvbi0xLjE=
+      amz-sdk-invocation-id:
+      - !!binary |
+        MTI3M2NkMzAtNzY2Ny00MWU5LWI4MDgtODE4OTg0Mzc5YjE2
+      amz-sdk-request:
+      - !!binary |
+        YXR0ZW1wdD0x
+    method: POST
+    uri: https://ssm.us-east-2.amazonaws.com/
+  response:
+    body:
+      string: '{"NextToken":"AAEAAd7HjsHPsfWa8AjBM8xU2v3x3y2gkJzOP52qZgTlOLTwAAAAAGigFH3w9UTVjgpZUyIQxOdKmVKEBTN83uXmo6Q3xYBSZX0gw7WOgRCjPnDxbgd6fzmJVmgnbU79xUAGjJEdZp0V+eMT4M5+WJz1UVFkKsFv+mm/oPOKix/CsBWUWNlBYgc3vM3hHakTCCR5G/34usEXYvujdx/Iv14wfox7TmWskvf4WXP+mFV+j3QuQTUmRYgTlqOgOA9TzOrwpj4zelMpEueOkWcDEBMmZ5vZ47nt9NUiLQ4M5pkDXwgJO9UC3fEcJabrbmj4+wAP8CNsBEbhbK5Bo4V9LrGHQS748It+NLwerPrkQHtn5R7ZiAWk2uhLATF6lloK1SYx9yOkpQNIm1kIVA9W3pIzSJkGYkBDDaJm/sBGCr6X+HiqGUQ8BX3QYnmjWHT3FKyFrhPsFrG6P9yh09BRhh/AYWS57kznxwpbmrsf6paHiBhYJY8mWWddPEwRyK4T90mg9ciRMkFAE/BVkndiQKAEhM/GhKvZBBQc9L8cxEY29RZOMTe/FE5rvXY3C5Z0XMj7TTMjrqPZ596LNQ1Mlywv41dkZo5u0/a6Bg6mwzZqQsHzj3LyrPWzHL+KMMFXIKguCG64NiuISLRf","Parameters":[{"ARN":"arn:aws:ssm:us-east-2:318341934254:parameter/foo/baz","DataType":"text","LastModifiedDate":1.755317505578E9,"Name":"/foo/baz","Type":"SecureString","Value":"AQICAHgabVcv70rp9mLGkzhrqCN34++39E3yG6opT3oWiUeIjQHzlmsgV5Gcanz46b8VrQzAAAAAZTBjBgkqhkiG9w0BBwagVjBUAgEAME8GCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMUdY1ipv5IuX83HMWAgEQgCLdD70T7esiOPM+anDBsrleqSXCQJJFB0sDOSeAd9wpVqwT","Version":1}]}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1079'
+      Content-Type:
+      - application/x-amz-json-1.1
+      Date:
+      - Sat, 16 Aug 2025 05:17:49 GMT
+      Server:
+      - Server
+      x-amzn-RequestId:
+      - d04d27f8-540f-4e24-b32f-5fac1760ba02
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"Path": "/foo/", "Recursive": false, "MaxResults": 1, "NextToken": "AAEAAd7HjsHPsfWa8AjBM8xU2v3x3y2gkJzOP52qZgTlOLTwAAAAAGigFH3w9UTVjgpZUyIQxOdKmVKEBTN83uXmo6Q3xYBSZX0gw7WOgRCjPnDxbgd6fzmJVmgnbU79xUAGjJEdZp0V+eMT4M5+WJz1UVFkKsFv+mm/oPOKix/CsBWUWNlBYgc3vM3hHakTCCR5G/34usEXYvujdx/Iv14wfox7TmWskvf4WXP+mFV+j3QuQTUmRYgTlqOgOA9TzOrwpj4zelMpEueOkWcDEBMmZ5vZ47nt9NUiLQ4M5pkDXwgJO9UC3fEcJabrbmj4+wAP8CNsBEbhbK5Bo4V9LrGHQS748It+NLwerPrkQHtn5R7ZiAWk2uhLATF6lloK1SYx9yOkpQNIm1kIVA9W3pIzSJkGYkBDDaJm/sBGCr6X+HiqGUQ8BX3QYnmjWHT3FKyFrhPsFrG6P9yh09BRhh/AYWS57kznxwpbmrsf6paHiBhYJY8mWWddPEwRyK4T90mg9ciRMkFAE/BVkndiQKAEhM/GhKvZBBQc9L8cxEY29RZOMTe/FE5rvXY3C5Z0XMj7TTMjrqPZ596LNQ1Mlywv41dkZo5u0/a6Bg6mwzZqQsHzj3LyrPWzHL+KMMFXIKguCG64NiuISLRf"}'
+    headers:
+      Content-Length:
+      - '727'
+      Content-Type:
+      - !!binary |
+        YXBwbGljYXRpb24veC1hbXotanNvbi0xLjE=
+      amz-sdk-invocation-id:
+      - !!binary |
+        MjNlYjljZTctOTE1Ny00MmU0LTg1MDYtZWIxNmQzNDUzY2Fl
+      amz-sdk-request:
+      - !!binary |
+        YXR0ZW1wdD0x
+    method: POST
+    uri: https://ssm.us-east-2.amazonaws.com/
+  response:
+    body:
+      string: '{"Parameters":[{"ARN":"arn:aws:ssm:us-east-2:318341934254:parameter/foo/bar","DataType":"text","LastModifiedDate":1.75531748124E9,"Name":"/foo/bar","Type":"String","Value":"foo.bar","Version":1}]}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '196'
+      Content-Type:
+      - application/x-amz-json-1.1
+      Date:
+      - Sat, 16 Aug 2025 05:17:49 GMT
+      Server:
+      - Server
+      x-amzn-RequestId:
+      - 91ee0be3-7a97-435f-a27f-15d62e14df71
+    status:
+      code: 200
+      message: OK
+version: 1

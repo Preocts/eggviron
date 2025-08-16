@@ -1,0 +1,37 @@
+interactions:
+- request:
+    body: '{"Name": "/foo/bar"}'
+    headers:
+      Content-Length:
+      - '20'
+      Content-Type:
+      - !!binary |
+        YXBwbGljYXRpb24veC1hbXotanNvbi0xLjE=
+      amz-sdk-invocation-id:
+      - !!binary |
+        NWI1NDZmNWUtOGQwMS00ODQ4LTliOTUtMzYwNWIwMDk2NjBk
+      amz-sdk-request:
+      - !!binary |
+        YXR0ZW1wdD0x
+    method: POST
+    uri: https://ssm.us-east-2.amazonaws.com/
+  response:
+    body:
+      string: '{"Parameter":{"ARN":"arn:aws:ssm:us-east-2:318341934254:parameter/foo/bar","DataType":"text","LastModifiedDate":1.75531748124E9,"Name":"/foo/bar","Type":"String","Value":"foo.bar","Version":1}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '193'
+      Content-Type:
+      - application/x-amz-json-1.1
+      Date:
+      - Sat, 16 Aug 2025 05:17:52 GMT
+      Server:
+      - Server
+      x-amzn-RequestId:
+      - 1b8d49d9-2ab5-4116-a483-3caa4774fd67
+    status:
+      code: 200
+      message: OK
+version: 1
