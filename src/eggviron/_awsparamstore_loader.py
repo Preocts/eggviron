@@ -17,9 +17,10 @@ try:
     from botocore.exceptions import BotoCoreError
     from botocore.exceptions import ClientError
 
-except ImportError as err:  # pragma: no cover
-    error_msg = "boto3 not installed. Install the 'aws' extra to use AWSParamStore."
-    raise ImportError(error_msg) from err
+    _BOTO = True
+
+except ImportError:
+    _BOTO = False
 
 if TYPE_CHECKING:
     from types_boto3_ssm import SSMClient
@@ -113,6 +114,10 @@ class AWSParamStore:
         self._aws_region = aws_region
         self._truncate = truncate_key
         self._recursive = recursive
+
+        if not _BOTO:
+            error_msg = "boto3 not installed. Install the 'aws' extra to use AWSParamStore."
+            raise AWSParamStoreException(error_msg)
 
         error_msg = ""
 
