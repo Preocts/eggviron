@@ -117,6 +117,23 @@ def test_run_returns_parameters_by_path_without_truncation() -> None:
 
 
 @pytest.mark.usefixtures("mock_ssm")
+def test_run_returns_parameters_by_path_without_truncation_recursively() -> None:
+    """Return all paramters found in the path, recursively, with pagination"""
+    expected = {
+        "/foo/bar": "foo.bar",
+        "/foo/baz": "kms:alias/aws/ssm:foo.baz",
+        "/foo/biz": "foo,biz",
+        "/foo/foo2/bar": "foo foo bar",
+    }
+    clazz = AWSParamStore(parameter_path="/foo/", aws_region=DEFAULT_REGION, recursive=True)
+
+    with patch("eggviron._awsparamstore_loader._MAX_RESULTS", 1):
+        results = clazz.run()
+
+    assert results == expected
+
+
+@pytest.mark.usefixtures("mock_ssm")
 def test_run_returns_parameters_by_path_within_truncation() -> None:
     """Return all paramters found in the path, nonrecursively, with pagination"""
     expected = {
