@@ -49,7 +49,7 @@ class AWSParamStoreException(Exception):
 
 
 _MAX_PAGINATION_LOOPS = 100
-_MAX_RESULTS = 100
+_MAX_RESULTS = 10
 
 
 class AWSParamStore:
@@ -160,8 +160,6 @@ class AWSParamStore:
         return {result["Parameter"]["Name"]: result["Parameter"]["Value"]}
 
     def _fetch_parameters(self, client: SSMClient) -> dict[str, str]:
-        import json
-
         next_token = ""
         values: dict[str, str] = {}
 
@@ -173,7 +171,6 @@ class AWSParamStore:
                 NextToken=next_token,
             )
 
-            print(json.dumps(results, indent=4, default=str))
             for parameter in results["Parameters"]:
                 values[parameter["Name"]] = parameter["Value"]
 
@@ -182,6 +179,6 @@ class AWSParamStore:
                 break
 
         else:
-            raise AWSParamStoreException(f"Max pagination loop exceeded: {_MAX_PAGINATION_LOOPS}")
+            raise AWSParamStoreException(f"Max pagination loop exceeded: {_MAX_PAGINATION_LOOPS=}")
 
         return values
