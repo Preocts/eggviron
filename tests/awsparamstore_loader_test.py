@@ -152,7 +152,7 @@ def test_run_returns_parameters_by_path_within_truncation() -> None:
 @pytest.mark.usefixtures("mock_ssm")
 def test_run_returns_parameters_by_path_raises_when_exceeds_max_pagination() -> None:
     """A safe-guard against infinite loops, raise if max pagination attempts are reached."""
-    pattern = "Max pagination loop exceeded: 1"
+    pattern = "Max pagination loop exceeded: _MAX_PAGINATION_LOOPS=1"
     clazz = AWSParamStore(parameter_path="/foo/", aws_region=DEFAULT_REGION)
 
     with (
