@@ -177,9 +177,9 @@ class Eggviron:
 
             self._loaded_values.update(results)
 
-        if self._mutate:
-            for key, value in results.items():
-                os.environ[key] = value
+            if self._mutate:
+                for key, value in results.items():
+                    os.environ[key] = value
 
         return self
 
