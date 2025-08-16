@@ -11,6 +11,15 @@ import dataclasses
 import logging
 from typing import overload
 
+try:
+    import boto3
+    from botocore.exceptions import BotoCoreError
+    from botocore.exceptions import ClientError
+
+except ImportError as err:  # pragma: no cover
+    error_msg = "boto3 not installed. Install the 'aws' extra to use AWSParamStore."
+    raise ImportError(error_msg) from err
+
 
 @dataclasses.dataclass(slots=True)
 class AWSParamStoreException(Exception):
@@ -33,17 +42,6 @@ class AWSParamStoreException(Exception):
             http_headers=err.response["ResponseMetadata"]["HTTPHeaders"],
             retry_attempts=err.response["ResponseMetadata"]["RetryAttempts"],
         )
-
-
-try:
-    import boto3
-    from botocore.exceptions import BotoCoreError
-    from botocore.exceptions import ClientError
-
-except ImportError:  # pragma: no cover
-    error_msg = "boto3 not installed. Install the 'aws' extra to use AWSParamStore."
-    raise AWSParamStoreException(error_msg)
-
 
 class AWSParamStore:
     """Load parameter store value(s) from AWS Parameter Store (SSM)."""
