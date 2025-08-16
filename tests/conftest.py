@@ -10,5 +10,6 @@ import pytest
 @pytest.fixture(autouse=True)
 def clear_environ() -> Generator[None, None, None]:
     """Ensure the environment variables are clean for all test runs."""
-    with patch.dict(os.environ, {}, clear=True):
+    clear = not bool(os.getenv("ALLOW_TEST_RECORDING"))
+    with patch.dict(os.environ, {}, clear=clear):
         yield None
