@@ -9,8 +9,8 @@ from __future__ import annotations
 
 import dataclasses
 import logging
-from typing import overload
 from typing import TYPE_CHECKING
+from typing import overload
 
 try:
     import boto3
@@ -48,6 +48,10 @@ class AWSParamStoreException(Exception):
         )
 
 
+_MAX_PAGINATION_LOOPS = 100
+_MAX_RESULTS = 100
+
+
 class AWSParamStore:
     """Load parameter store value(s) from AWS Parameter Store (SSM)."""
 
@@ -61,6 +65,7 @@ class AWSParamStore:
         parameter_path: str,
         aws_region: str | None = None,
         truncate_key: bool = False,
+        recursive: bool = False,
     ) -> None:
         """
         Load all key:pair values found under given path from AWS Parameter Store (SSM)
@@ -71,6 +76,7 @@ class AWSParamStore:
             parameter_path: Path of parameters. e.g.: /Finance/Prod/IAD/WinServ2016/
             aws_region: Region to load from. Defaults to AWS_REGION environment variable
             truncate_key: When True only the final component of the path will be used as the key
+            recursive: Recursively load all nested paths under given path
         """
         pass
 
@@ -101,10 +107,12 @@ class AWSParamStore:
         parameter_name: str | None = None,
         aws_region: str | None = None,
         truncate_key: bool = False,
+        recursive: bool = False,
     ) -> None:
         self._parameter_path = parameter_path or parameter_name or ""
         self._aws_region = aws_region
         self._truncate = truncate_key
+        self._recursive = recursive
 
         error_msg = ""
 
@@ -127,7 +135,11 @@ class AWSParamStore:
         """Fetch values from AWS Parameter store."""
         try:
             client = boto3.client("ssm", region_name=self._aws_region)
-            results = self._fetch_parameter(client)
+
+            if self._parameter_path.endswith("/"):
+                results = self._fetch_parameters(client)
+            else:
+                results = self._fetch_parameter(client)
 
         except ClientError as err:
             raise AWSParamStoreException.from_clienterror(err)
@@ -146,3 +158,30 @@ class AWSParamStore:
         result = client.get_parameter(Name=self._parameter_path)
 
         return {result["Parameter"]["Name"]: result["Parameter"]["Value"]}
+
+    def _fetch_parameters(self, client: SSMClient) -> dict[str, str]:
+        import json
+
+        next_token = ""
+        values: dict[str, str] = {}
+
+        for _ in range(_MAX_PAGINATION_LOOPS):
+            results = client.get_parameters_by_path(
+                Path=self._parameter_path,
+                Recursive=self._recursive,
+                MaxResults=_MAX_RESULTS,
+                NextToken=next_token,
+            )
+
+            print(json.dumps(results, indent=4, default=str))
+            for parameter in results["Parameters"]:
+                values[parameter["Name"]] = parameter["Value"]
+
+            next_token = results.get("NextToken") or ""
+            if not next_token:
+                break
+
+        else:
+            raise AWSParamStoreException(f"Max pagination loop exceeded: {_MAX_PAGINATION_LOOPS}")
+
+        return values
