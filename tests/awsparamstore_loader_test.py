@@ -18,10 +18,10 @@ def mock_ssm() -> Generator[None, None, None]:
     """Mock the parameter store."""
     with mock_aws():
         client = boto3.client("ssm", DEFAULT_REGION)
-        client.put_parameter(Name="/biz/baz", Value="foo.bar", Type="String")
+        client.put_parameter(Name="/biz/baz", Value="biz.baz", Type="String")
         client.put_parameter(Name="/foo/bar", Value="foo.bar", Type="String")
         client.put_parameter(Name="/foo/baz", Value="foo.baz", Type="SecureString")
-        client.put_parameter(Name="/foo/biz", Value="foo,bar", Type="StringList")
+        client.put_parameter(Name="/foo/biz", Value="foo,biz", Type="StringList")
 
         yield None
 
@@ -72,17 +72,27 @@ def test_run_raises_without_region() -> None:
 
 
 @pytest.mark.usefixtures("mock_ssm")
-def test_run_returns_parameter_by_name() -> None:
-    """WIP"""
+def test_run_returns_parameter_by_name_without_truncation() -> None:
+    """Return single value with full path as the key"""
 
     result = AWSParamStore(parameter_name="/foo/bar", aws_region=DEFAULT_REGION).run()
 
-    assert result == {}
+    assert result == {"/foo/bar": "foo.bar"}
+
+
+@pytest.mark.usefixtures("mock_ssm")
+def test_run_returns_parameter_by_name_with_truncation() -> None:
+    """Return single value with just the final component of the path as the key"""
+    clazz = AWSParamStore(parameter_name="/foo/bar", aws_region=DEFAULT_REGION, truncate_key=True)
+
+    result = clazz.run()
+
+    assert result == {"bar": "foo.bar"}
 
 
 @pytest.mark.usefixtures("mock_ssm")
 def test_run_raises_exception_when_name_not_found() -> None:
-    """WIP"""
+    """Ask for a parameter that does not exist to raise an exception"""
 
     with pytest.raises(AWSParamStoreException):
         AWSParamStore(parameter_name="/oo/bar", aws_region=DEFAULT_REGION).run()
