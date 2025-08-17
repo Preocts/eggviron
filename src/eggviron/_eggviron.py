@@ -156,15 +156,15 @@ class Eggviron:
 
     def load(self, *loader: Loader) -> Eggviron:
         """
-        Use a loader to update the loaded values. Loaders are used in the order provided.
+        Use loader(s) to update the loaded values. Loaders are used in the order provided.
 
-        Key:value pairs are added to os.environ after each loader is run.
+        Key:value pairs are added to os.environ after each loader is run if mutation is allow.
 
         Args:
-            loader: The loader classes to use. More than one can be provided.
+            loader: The loader(s) to use
 
         Returns:
-            Eggviron: The mutated instance of self.
+            Eggviron with newly loaded key:value pairs
         """
         for _loader in loader:
             results = _loader.run()

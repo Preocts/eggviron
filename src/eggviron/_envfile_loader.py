@@ -1,13 +1,34 @@
 """
 Load local .env from CWD or path, if provided
 
-Current format for the `.env` file supports strings only and is parsed in
-the following order:
+`.env` file is parsed with the following rules:
 
+- Lines beginning with `#` are considered comments and ignored
 - Each seperate line is considered a new possible key/value set
 - Each set is delimted by the first `=` found
+- Leading `export` keyword is removed from key, case agnostic
 - Leading and trailing whitespace are removed
 - Matched leading/trailing single quotes or double quotes will be stripped from values (not keys).
+
+This `.env` example:
+
+```conf
+# Example .env file
+export PASSWORD     = correct horse battery staple
+USER_NAME           = "not_admin"
+MESSAGE             = '    Totally not an "admin" account logging in'
+```
+
+Will be parsed as:
+
+```python
+{
+    "PASSWORD": "correct horse battery staple",
+    "USER_NAME": "not_admin",
+    "MESSAGE": '    Totally not an "admin" account logging in',
+}
+```
+
 """
 
 from __future__ import annotations
@@ -35,7 +56,7 @@ class EnvFileLoader:
         self._filename = filename
 
     def run(self) -> dict[str, str]:
-        """Load key:pair values of file given at instantiated."""
+        """Load key:value pairs of file given at instantiated."""
         loaded_values = self._load_values()
 
         for key, value in loaded_values.items():
