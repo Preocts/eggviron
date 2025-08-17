@@ -75,7 +75,7 @@ class AWSParamStore:
 
         Args:
             parameter_path: Path of parameters. e.g.: /Finance/Prod/IAD/WinServ2016/
-            aws_region: Region to load from. Defaults to AWS_REGION environment variable
+            aws_region: Region to load from. Defaults to AWS_DEFAULT_REGION environment variable
             truncate_key: When True only the final component of the path will be used as the key
             recursive: Recursively load all nested paths under given path
         """
@@ -96,7 +96,7 @@ class AWSParamStore:
 
         Args:
             parameter_name: Parameter name to load. e.g.: /Finance/Prod/IAD/WinServ2016/license33
-            aws_region: Region to load from. Defaults to AWS_REGION environment variable
+            aws_region: Region to load from. Defaults to AWS_DEFAULT_REGION environment variable
             truncate_key: When True only the final component of the name will be used as the key
         """
         pass

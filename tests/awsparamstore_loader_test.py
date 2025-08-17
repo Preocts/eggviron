@@ -1,6 +1,32 @@
+"""
+Tests requiring calls to AWS are recorded with vcrpy
+
+To record new tests:
+
+- if needed, delete the './tests/cassettes/*.yaml' file(s)
+- create a .env file with the following:
+
+```
+ALLOW_TEST_RECORDING=1
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_DEFAULT_REGION=us-east-2
+```
+
+In AWS, there needs to be a few parameters to collect. The past tests
+were set up with the following parameter key:pairs:
+
+- (String)          /foo/bar : foo.bar (string)
+- (Secure String)   /foo/baz : foo.baz (secure string)
+- (String List)     /foo/biz : foo,biz (string list)
+- (String)          /foo/foo2/bar: "foo foo bar" (string)
+- (String)          /biz/baz : biz.baz
+"""
+
 from __future__ import annotations
 
 import os
+from collections.abc import Generator
 from unittest.mock import patch
 
 import pytest
@@ -26,6 +52,19 @@ recorder = vcr.VCR(
         "url",
     ],
 )
+
+
+@pytest.fixture(autouse=True)
+def mock_environ() -> Generator[None, None, None]:
+    """Setup mock AWS variables unless recording is being done."""
+    mocked_env = {
+        "AWS_ACCESS_KEY_ID": "mock",
+        "AWS_SECRET_ACCESS_KEY": "mock",
+        "AWS_DEFAULT_REGION": "us-east-2",
+    }
+    clear = not bool(os.getenv("ALLOW_TEST_RECORDING"))
+    with patch.dict(os.environ, mocked_env if clear else {}, clear=clear):
+        yield None
 
 
 def test_init_with_boto3() -> None:
