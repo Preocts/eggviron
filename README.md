@@ -31,13 +31,13 @@ sources by default.
 ```py
 from eggviron import Eggviron
 from eggviron import EnvFileLoader
-from eggviron import AWSParamStore
+from eggviron import AWSParamStoreLoader
 
 environ = Eggviron().load(
     # Load the local '.env' file
     EnvFileLoader(),
     # Load all key:value pairs from AWS Parameter Store
-    AWSParamStore(parameter_path="/prod/frontend-api/"),
+    AWSParamStoreLoader(parameter_path="/prod/frontend-api/"),
 )
 
 print(f"Using local account: {environ['ACCOUNT_ID']}")
@@ -94,7 +94,7 @@ Load current `os.environ` key:value pairs into the Eggviron instance.
 
 Load a local '.env' file into the Eggviron instance.
 
-### AWSParamStore (*, parameter_path: str, parameter_name: str, aws_region: str | None = None, truncate_key: bool = False, recursive: bool = False)
+### AWSParamStoreLoader (*, parameter_path: str, parameter_name: str, aws_region: str | None = None, truncate_key: bool = False, recursive: bool = False)
 
 Load all key:value pairs found under given path from AWS Parameter Store (SSM).
 Requires AWS access keys to be set in the environment variables. Only
@@ -106,13 +106,14 @@ parameter_path or parameter_name is accepted, not both.
 - truncate_key: When True only the final component of the path will be used as the key
 - recursive: Recursively load all nested paths under given parameter_path
 
-The `AWSParamStore` requires `boto3` and `botocore` to be installed. If eggviron
-is installed with the `aws` extra, these packages will be included.
+The `AWSParamStoreLoader` requires `boto3` and `botocore` to be installed. If
+eggviron is installed with the `aws` extra, these packages will be included.
 
-For convenience, `AWSParamStore` will raise `AWSParamStoreException` for all `boto3` client errors with detailed attributes for troubleshooting.
+For convenience, `AWSParamStoreLoader` will raise `AWSParamStoreException` for
+all `boto3` client errors with detailed attributes for troubleshooting.
 
 ### AWSParamStoreException(message: str, code: str | None, request_id: str | None, http_status_code: int | None = None, http_headers: dict[str, str] = {}, retry_attemps: int | None = None)
 
 Raised from all `botocore.exceptions.ClientError` and
-`botocore.exceptions.BotoCoreError` exceptions in `AWSParamStore`. If available,
-contains the required information for troubleshooting the error.
+`botocore.exceptions.BotoCoreError` exceptions in `AWSParamStoreLoader`. If
+available, contains the required information for troubleshooting the error.

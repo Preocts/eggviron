@@ -53,7 +53,7 @@ _MAX_PAGINATION_LOOPS = 100
 _MAX_RESULTS = 10
 
 
-class AWSParamStore:
+class AWSParamStoreLoader:
     """Load parameter store value(s) from AWS Parameter Store (SSM)."""
 
     log = logging.getLogger(__name__)
