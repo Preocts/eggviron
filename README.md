@@ -12,40 +12,107 @@
 
 ---
 
-Load tokens, secrets, and other values at run-time.
+Manage loading key:value pairs at runtime from various sources. Values can then
+be accessed from `os.environ` similar to the
+[`python-dotenv`](https://pypi.org/project/python-dotenv/) library.
+Additionally, the `Eggviron` object provides a dictionary-like interface for
+accessing all loaded values. All keys and values are stored as strings with
+methods in Eggviron for converting to int, float, and bool as needed.
+
+Don't want to mutate the `os.environ`? Turn off mutation when using the
+`Eggviron` class.
+
+Loaders allow the selection of source for the key:value pairs and which order
+they are loaded in. Prevent clobbering existing values when loading multiple
+sources by default.
+
+### Example:
+
+```py
+from eggviron import Eggviron
+from eggviron import EnvFileLoader
+from eggviron import AWSParamStore
+
+environ = Eggviron().load(
+    # Load the local '.env' file
+    EnvFileLoader(),
+    # Load all key:value pairs from AWS Parameter Store
+    AWSParamStore(parameter_path="/prod/frontend-api/"),
+)
+
+print(f"Using local account: {environ['ACCOUNT_ID']}")
+print(f"New UI feature flag: {environ.get_bool('FEATURE_FLAG_NEW_UI')}")
+```
 
 ---
 
-## `.env` file format
+## API Reference
 
-`.env` file is parsed with the following rules:
+### Eggviron(*, raise_on_overwrite: bool = True, mutate_environ: bool = True)
 
-- Lines beginning with `#` are considered comments and ignored
-- Each seperate line is considered a new possible key/value set
-- Each set is delimted by the first `=` found
-- Leading `export` keyword is removed from key, case agnostic
-- Leading and trailing whitespace are removed
-- Matched leading/trailing single quotes or double quotes will be stripped from
-  values (not keys).
+A key:value store optionally loaded through Loaders. By default, key:value pairs
+added
 
-I'm open to suggestions on standards to follow here. This is compiled from
-"crowd standard" and what is useful at the time.
+- raise_on_overwrite: If True a KeyError will be raised when an existing key is
+  overwritten by an assignment or load() action.
+- mutate_environ: If True then the os.environ values are mutated when .load() is
+  run or Eggviron is updated.
 
-This `.env` example:
+#### load(loader: Loader) -> Eggviron
 
-```conf
-# Example .env file
-export PASSWORD     = correct horse battery staple
-USER_NAME           = "not_admin"
-MESSAGE             = '    Totally not an "admin" account logging in'
-```
+Use loader(s) to update the loaded values. Loaders are used in the order
+provided. Key:value pairs are added to os.environ after each loader is run if
+mutation is allow.
 
-Will be parsed as:
+#### get(key: str, default: str | None = None) -> str
 
-```python
-{
-    "PASSWORD": "correct horse battery staple",
-    "USER_NAME": "not_admin",
-    "MESSAGE": '    Totally not an "admin" account logging in',
-}
-```
+Get a value from the `Eggviron`. If default is None and the key is not found, a
+KeyError will be raised.
+
+#### get_int(key: str, default: int | None = None) -> int
+
+Get a value from the `Eggviron`, converting it to an int. If default is None and
+the key is not found, a KeyError will be raised.
+
+#### get_float(key: str, default: float | None = None) -> float
+
+Get a value from the `Eggviron`, converting it to an float. If default is None and
+the key is not found, a KeyError will be raised.
+
+#### get_bool(key: str, default: bool | None = None) -> bool
+
+Get a value from the `Eggviron`, converting it to an bool. If default is None and
+the key is not found, a KeyError will be raised.
+
+Valid boolean values are "true", "false", "1", and "0" (case insensitive)
+
+### EnvironLoader()
+
+Load current `os.environ` key:value pairs into the Eggviron instance.
+
+### EnvFileLoader(filename: str = "./.env")
+
+Load a local '.env' file into the Eggviron instance.
+
+### AWSParamStore (*, parameter_path: str, parameter_name: str, aws_region: str | None = None, truncate_key: bool = False, recursive: bool = False)
+
+Load all key:value pairs found under given path from AWS Parameter Store (SSM).
+Requires AWS access keys to be set in the environment variables. Only
+parameter_path or parameter_name is accepted, not both.
+
+- parameter_path: Path of parameters. e.g.: /Finance/Prod/IAD/WinServ2016/
+- parameter_name: Parameter name to load. e.g.: /Finance/Prod/IAD/WinServ2016/license33
+- aws_region: Region to load from. Defaults to AWS_DEFAULT_REGION environment variable
+- truncate_key: When True only the final component of the path will be used as the key
+- recursive: Recursively load all nested paths under given parameter_path
+
+The `AWSParamStore` requires `boto3` and `botocore` to be installed. If eggviron
+is installed with the `aws` extra, these packages will be included.
+
+For convenience, `AWSParamStore` will raise `AWSParamStoreException` for all `boto3` client errors with detailed attributes for troubleshooting.
+
+### AWSParamStoreException(message: str, code: str | None, request_id: str | None, http_status_code: int | None = None, http_headers: dict[str, str] = {}, retry_attemps: int | None = None)
+
+Raised from all `botocore.exceptions.ClientError` and
+`botocore.exceptions.BotoCoreError` exceptions in `AWSParamStore`. If available,
+contains the required information for troubleshooting the error.
