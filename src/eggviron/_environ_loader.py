@@ -11,7 +11,7 @@ class EnvironLoader:
     name = "EnvironLoader"
 
     def run(self) -> dict[str, str]:
-        """Fetch all of os.environ key:pair values."""
+        """Fetch all of os.environ key:value pairs."""
         for key, value in os.environ.items():
             self.log.debug("Found, %s : ***%s", key, value[-(len(value) // 4) :])
 

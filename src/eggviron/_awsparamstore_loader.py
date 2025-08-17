@@ -69,7 +69,7 @@ class AWSParamStore:
         recursive: bool = False,
     ) -> None:
         """
-        Load all key:pair values found under given path from AWS Parameter Store (SSM)
+        Load all key:value pairs found under given path from AWS Parameter Store (SSM)
 
         Requires AWS access keys to be set in the environment variables.
 
@@ -90,7 +90,7 @@ class AWSParamStore:
         truncate_key: bool = False,
     ) -> None:
         """
-        Load a single key:pair value found under given name from AWS Parameter Store (SSM)
+        Load a single key:value pair found under given name from AWS Parameter Store (SSM)
 
         Requires AWS access keys to be set in the environment variables.
 

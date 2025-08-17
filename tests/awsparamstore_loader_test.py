@@ -14,7 +14,7 @@ AWS_DEFAULT_REGION=us-east-2
 ```
 
 In AWS, there needs to be a few parameters to collect. The past tests
-were set up with the following parameter key:pairs:
+were set up with the following parameter key:values:
 
 - (String)          /foo/bar : foo.bar (string)
 - (Secure String)   /foo/baz : foo.baz (secure string)
