@@ -36,7 +36,7 @@ from __future__ import annotations
 import logging
 import re
 
-_RE_LTQUOTES = re.compile(r"([\"'])(.*)\1$|^(.*)$")
+_RE_LTQUOTES = re.compile(r"^\s*?([\"'])(.*)\1$|^(.*)$")
 _EXPORT_PREFIX = re.compile(r"^\s*?export\s")
 
 
@@ -92,8 +92,6 @@ class EnvFileLoader:
             key, value = line.split("=", 1)
 
             key = _strip_export(key).strip()
-
-            value = value.strip()
 
             value, was_quoted = _remove_lt_quotes(value)
 
