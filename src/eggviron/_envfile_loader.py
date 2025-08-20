@@ -38,6 +38,7 @@ import re
 
 _RE_LTQUOTES = re.compile(r"^\s*?([\"'])(.*)\1$|^(.*)$")
 _EXPORT_PREFIX = re.compile(r"^\s*?export\s")
+_INLINE_COMMENT = re.compile(r"([^\s]+)(\s+#.*)")
 
 
 class EnvFileLoader:
@@ -98,7 +99,7 @@ class EnvFileLoader:
             if not was_quoted:
                 value = _remove_inline_comment(value)
 
-            loaded_values[key] = value
+            loaded_values[key] = value if was_quoted else value.strip()
 
         return loaded_values
 
@@ -114,6 +115,7 @@ def _strip_export(in_: str) -> str:
     return re.sub(_EXPORT_PREFIX, "", in_)
 
 
-def _remove_inline_comment(value: str) -> str:
-    """Remove all characters after a comment, striping the resulting value"""
-    return value.split("#", 1)[0].strip()
+def _remove_inline_comment(_in: str) -> str:
+    """Remove inline comments."""
+    m = _INLINE_COMMENT.match(_in)
+    return m.group(1) if m else _in
