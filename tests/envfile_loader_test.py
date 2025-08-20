@@ -29,6 +29,7 @@ actually valid = neat
 
 inline=comments # Are allowed
 quoted_inline="comments # are part of the quoted string"
+inline_comment=weak!@#$%password1234 # Inline require whitespace
 """
 
 
@@ -129,3 +130,10 @@ def test_quoted_inline_comments_are_retained(loader: EnvFileLoader) -> None:
     results = loader.run()
 
     assert results["quoted_inline"] == "comments # are part of the quoted string"
+
+
+def test_inline_comments_require_whitespace(loader: EnvFileLoader) -> None:
+    # Don't strip comments unless the # has leading whitespace
+    results = loader.run()
+
+    assert results["inline_comment"] == "weak!@#$%password1234"
