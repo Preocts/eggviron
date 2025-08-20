@@ -26,6 +26,9 @@ trailing_broken_double_nested_quoted = "'Some quoted value'
 trailing_broken_single_nested_quoted = '"Some quoted value"
 export export_example = elpmaxe
 actually valid = neat
+
+inline=comments # Are allowed
+quoted_inline="comments # are part of the quoted string"
 """
 
 
@@ -112,3 +115,17 @@ def test_leading_broken_double_nested_quotes(loader: EnvFileLoader) -> None:
     assert results["leading_broken_single_nested_quoted"] == '"Some quoted value"\''
     assert results["trailing_broken_double_nested_quoted"] == "\"'Some quoted value'"
     assert results["trailing_broken_single_nested_quoted"] == '\'"Some quoted value"'
+
+
+def test_inline_comments_are_ignored(loader: EnvFileLoader) -> None:
+    # If an inline comment is not quoted, ignore everything past the # character
+    results = loader.run()
+
+    assert results["inline"] == "comments"
+
+
+def test_quoted_inline_comments_are_retained(loader: EnvFileLoader) -> None:
+    # If an quoted string has a # in it, the full quoted string is still returned
+    results = loader.run()
+
+    assert results["quoted_inline"] == "comments # are part of the quoted string"

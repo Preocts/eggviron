@@ -14,7 +14,7 @@ This `.env` example:
 
 ```conf
 # Example .env file
-export PASSWORD     = correct horse battery staple
+export PASSWORD     = correct horse battery staple  # great password
 USER_NAME           = "not_admin"
 MESSAGE             = '    Totally not an "admin" account logging in'
 ```
@@ -95,19 +95,27 @@ class EnvFileLoader:
 
             value = value.strip()
 
-            value = _remove_lt_quotes(value)
+            value, was_quoted = _remove_lt_quotes(value)
+
+            if not was_quoted:
+                value = _remove_inline_comment(value)
 
             loaded_values[key] = value
 
         return loaded_values
 
 
-def _remove_lt_quotes(in_: str) -> str:
+def _remove_lt_quotes(in_: str) -> tuple[str, bool]:
     """Removes matched leading and trailing single / double quotes"""
     m = _RE_LTQUOTES.match(in_)
-    return m.group(2) if m and m.group(2) else in_
+    return m.group(2) if m and m.group(2) else in_, bool(m and m.group(2))
 
 
 def _strip_export(in_: str) -> str:
     """Removes leading 'export ' prefix"""
     return re.sub(_EXPORT_PREFIX, "", in_)
+
+
+def _remove_inline_comment(value: str) -> str:
+    """Remove all characters after a comment, striping the resulting value"""
+    return value.split("#", 1)[0].strip()
