@@ -36,9 +36,10 @@ from __future__ import annotations
 import logging
 import re
 
-_RE_LTQUOTES = re.compile(r"^\s*?([\"'])(.*)\1(\s+#.*)?$")
+_RE_LTQUOTES = re.compile(r"^\s*?([\"'])(.*)\1(\s+[#;].*)?$")
 _EXPORT_PREFIX = re.compile(r"^\s*?export\s")
-_INLINE_COMMENT = re.compile(r"([^\s]+)(\s+#.*)")
+_INLINE_COMMENT = re.compile(r"([^\s]+)(\s+[#;].*)")
+_COMMENT_CHARS = ["#", ";"]
 
 
 class EnvFileLoader:
@@ -84,7 +85,7 @@ class EnvFileLoader:
         """Parses env file into key-pair values"""
         loaded_values = {}
         for idx, line in enumerate(input_file.split("\n"), start=1):
-            if not line or line.strip().startswith("#"):
+            if not line or line.strip()[0] in _COMMENT_CHARS:
                 continue
 
             if len(line.split("=", 1)) != 2:
