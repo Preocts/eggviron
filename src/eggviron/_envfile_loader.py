@@ -36,7 +36,7 @@ from __future__ import annotations
 import logging
 import re
 
-_RE_LTQUOTES = re.compile(r"^\s*?([\"'])(.*)\1$|^(.*)$")
+_RE_LTQUOTES = re.compile(r"^\s*?([\"'])(.*)\1(\s+#.*)?$")
 _EXPORT_PREFIX = re.compile(r"^\s*?export\s")
 _INLINE_COMMENT = re.compile(r"([^\s]+)(\s+#.*)")
 

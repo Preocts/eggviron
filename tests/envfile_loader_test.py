@@ -28,7 +28,7 @@ export export_example = elpmaxe
 actually valid = neat
 
 inline=comments # Are allowed
-quoted_inline="comments # are part of the quoted string"
+quoted_inline="comments # are part of the quoted string" # Inline still allowed
 inline_comment=weak!@#$%password1234 # Inline require whitespace
 """
 
