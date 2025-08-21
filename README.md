@@ -117,3 +117,33 @@ all `boto3` client errors with detailed attributes for troubleshooting.
 Raised from all `botocore.exceptions.ClientError` and
 `botocore.exceptions.BotoCoreError` exceptions in `AWSParamStoreLoader`. If
 available, contains the required information for troubleshooting the error.
+
+---
+
+## env file format
+
+The env file format supports many formatting features.
+
+```ini
+# Comments are allowed
+; With either leading charater
+simple=value # Inline comments are supported
+complex = value; there must be a leading whitespace for inline comments
+quoted = 'First layer of matching quotes is stripped'
+trickery="We're #1 but only because of the quotes here"
+# leading export keywords are stripped
+export TOKEN = sometoken
+; Whitespace around key:pairs is trimmed except when quoted
+    whitespace    =    trimmed
+```
+
+```json
+{
+  "simple": "value",
+  "complex": "value; there must be a leading whitespace for inline comments",
+  "quoted": "First layer of matching quotes is stripped",
+  "trickery": "We're #1 but only because of the quotes here",
+  "TOKEN": "sometoken",
+  "whitespace": "trimmed"
+}
+```
