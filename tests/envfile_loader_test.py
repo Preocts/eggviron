@@ -29,6 +29,7 @@ export export_example = elpmaxe
 actually valid = neat
 
 inline=comments # Are allowed
+inline_with_spaces=values have spaces ; and comments
 quoted_inline="comments # are part of the quoted string"
 quoted_inline_comment="comments # are part of the quoted string" ;Inline still allowed
 inline_comment=weak!@#$%password1234 # Inline require whitespace
@@ -125,6 +126,7 @@ def test_inline_comments_are_ignored(loader: EnvFileLoader) -> None:
     results = loader.run()
 
     assert results["inline"] == "comments"
+    assert results["inline_with_spaces"] == "values have spaces"
 
 
 def test_quoted_inline_comments_are_retained(loader: EnvFileLoader) -> None:
