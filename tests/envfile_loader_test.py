@@ -19,6 +19,7 @@ single_quoted = 'Some quoted value'
 double_nested_quoted = "'Some quoted value'"
 single_nested_quoted = '"Some quoted value"'
 # commented = line
+; This is also a comment
 
 leading_broken_double_nested_quoted = 'Some quoted value'"
 leading_broken_single_nested_quoted = "Some quoted value"'
@@ -28,7 +29,8 @@ export export_example = elpmaxe
 actually valid = neat
 
 inline=comments # Are allowed
-quoted_inline="comments # are part of the quoted string" # Inline still allowed
+quoted_inline="comments # are part of the quoted string"
+quoted_inline_comment="comments # are part of the quoted string" ;Inline still allowed
 inline_comment=weak!@#$%password1234 # Inline require whitespace
 """
 
@@ -130,6 +132,7 @@ def test_quoted_inline_comments_are_retained(loader: EnvFileLoader) -> None:
     results = loader.run()
 
     assert results["quoted_inline"] == "comments # are part of the quoted string"
+    assert results["quoted_inline_comment"] == "comments # are part of the quoted string"
 
 
 def test_inline_comments_require_whitespace(loader: EnvFileLoader) -> None:
