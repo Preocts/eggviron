@@ -56,7 +56,7 @@ _MAX_RESULTS = 10
 class AWSParamStoreLoader:
     """Load parameter store value(s) from AWS Parameter Store (SSM)."""
 
-    log = logging.getLogger(__name__)
+    log = logging.getLogger("eggviron")
     name = "AWSParamStore"
 
     @overload

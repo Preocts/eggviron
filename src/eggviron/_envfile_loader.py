@@ -45,7 +45,7 @@ _COMMENT_CHARS = ["#", ";"]
 class EnvFileLoader:
     """Load local .env file"""
 
-    log = logging.getLogger(__name__)
+    log = logging.getLogger("eggviron")
     name = "EnvFileLoader"
 
     def __init__(self, filename: str = "./.env") -> None:
