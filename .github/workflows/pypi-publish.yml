@@ -43,7 +43,7 @@ jobs:
     runs-on: "ubuntu-latest"
     environment:
       name: "pypi"
-      url: "https://pypi.org/project/commented-configparser/"
+      url: "https://pypi.org/project/eggviron/"
     permissions:
       id-token: "write"
 
