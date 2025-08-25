@@ -191,6 +191,21 @@ def test_loader_does_not_mutate_environ() -> None:
     assert "luz" not in os.environ
 
 
+def test_loader_debug_logging(caplog: pytest.LogCaptureFixture) -> None:
+    # Ensure when logging is DEBUG the masked loaded values are logged
+    carton = Eggviron()
+    loader_one = MockLoader({"owl": "lady"})
+    loader_two = MockLoader({"luz": "good witch", "boiling": "sea"})
+
+    with caplog.at_level("DEBUG"):
+
+        carton.load(loader_one, loader_two)
+
+    assert "MockLoader loaded, owl : ****" in caplog.text
+    assert "MockLoader loaded, luz : ****itch" in caplog.text
+    assert "MockLoader loaded, boiling : ****" in caplog.text
+
+
 @pytest.mark.parametrize(
     "method, key, expected",
     (

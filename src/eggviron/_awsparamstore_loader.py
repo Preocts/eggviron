@@ -8,7 +8,6 @@ Load parameter store values from an AWS Parameter Store (SSM)
 from __future__ import annotations
 
 import dataclasses
-import logging
 from typing import TYPE_CHECKING
 from typing import overload
 
@@ -56,7 +55,6 @@ _MAX_RESULTS = 10
 class AWSParamStoreLoader:
     """Load parameter store value(s) from AWS Parameter Store (SSM)."""
 
-    log = logging.getLogger("eggviron")
     name = "AWSParamStore"
 
     @overload
