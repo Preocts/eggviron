@@ -33,7 +33,6 @@ Will be parsed as:
 
 from __future__ import annotations
 
-import logging
 import re
 
 _RE_LTQUOTES = re.compile(r"^\s*?([\"'])(.*)\1(\s+[#;].*)?$")
@@ -45,7 +44,6 @@ _COMMENT_CHARS = ["#", ";"]
 class EnvFileLoader:
     """Load local .env file"""
 
-    log = logging.getLogger("eggviron")
     name = "EnvFileLoader"
 
     def __init__(self, filename: str = "./.env") -> None:
@@ -58,17 +56,8 @@ class EnvFileLoader:
         self._filename = filename
 
     def run(self) -> dict[str, str]:
-        """Load key:value pairs of file given at instantiated."""
-        loaded_values = self._load_values()
-
-        for key, value in loaded_values.items():
-            self.log.debug("Found, %s : ***%s", key, value[-(len(value) // 4) :])
-
-        return loaded_values
-
-    def _load_values(self) -> dict[str, str]:
         """
-        Load values from .env, or provided filename, to class state.
+        Load key:value pairs of file given at instantiated.
 
         Args:
             filename : [str] Alternate filename to load over `.env`
@@ -77,7 +66,6 @@ class EnvFileLoader:
             FileNotFoundError: When file cannot be found
             OSError: On file access error
         """
-        self.log.debug("Reading vars from '%s'", self._filename)
         with open(self._filename, encoding="utf-8") as input_file:
             return self.parse_env_file(input_file.read())
 

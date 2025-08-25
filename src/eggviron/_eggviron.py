@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import contextlib
+import logging
 import os
 from collections.abc import Generator
 from typing import TYPE_CHECKING
@@ -72,6 +73,8 @@ def _validate_default_type(obj: object | None, _type: type) -> None:
 
 class Eggviron:
     """A key-value store optionally loaded from the local environment and other sources."""
+
+    log = logging.getLogger("eggviron")
 
     def __init__(self, *, raise_on_overwrite: bool = True, mutate_environ: bool = True) -> None:
         """
@@ -168,6 +171,14 @@ class Eggviron:
         """
         for _loader in loader:
             results = _loader.run()
+            if self.log.getEffectiveLevel() <= 10:
+                for key, value in results.items():
+                    self.log.debug(
+                        "%s loaded, %s : ****%s",
+                        _loader.name,
+                        key,
+                        value[-4:] if len(value) > 8 else "",
+                    )
 
             if self._strict:
                 conflicts = [key for key in results if key in self._loaded_values]

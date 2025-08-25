@@ -46,6 +46,14 @@ print(f"New UI feature flag: {environ.get_bool('FEATURE_FLAG_NEW_UI')}")
 
 ---
 
+## Logging
+
+- Logger name: `eggviron`
+- No handlers, levels, or formatters are applied to the core library
+- Minimal logging is used.
+
+---
+
 ## API Reference
 
 ### Eggviron(*, raise_on_overwrite: bool = True, mutate_environ: bool = True)
