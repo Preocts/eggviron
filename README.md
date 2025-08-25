@@ -26,6 +26,12 @@ Loaders allow the selection of source for the key:value pairs and which order
 they are loaded in. Prevent clobbering existing values when loading multiple
 sources by default.
 
+## Install
+
+```console
+pip install eggviron
+```
+
 ### Example:
 
 ```py
