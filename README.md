@@ -19,6 +19,9 @@ Additionally, the `Eggviron` object provides a dictionary-like interface for
 accessing all loaded values. All keys and values are stored as strings with
 methods in Eggviron for converting to int, float, and bool as needed.
 
+Eggviron is designed to fail early and fail often. This allows for failures of
+environment setup to be caught quickly, removing assumption.
+
 Don't want to mutate the `os.environ`? Turn off mutation when using the
 `Eggviron` class.
 
