@@ -3,10 +3,13 @@ from __future__ import annotations
 import contextlib
 import logging
 import os
-from collections.abc import Generator
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from collections.abc import Generator
+    from collections.abc import ItemsView
+    from collections.abc import KeysView
+    from collections.abc import ValuesView
     from typing import Protocol
 
     class Loader(Protocol):
@@ -156,6 +159,18 @@ class Eggviron:
 
     def __contains__(self, key: str) -> bool:
         return key in self._loaded_values
+
+    def keys(self) -> KeysView[str]:
+        """A set-like object providing a view on loaded keys."""
+        return self._loaded_values.keys()
+
+    def values(self) -> ValuesView[str]:
+        """An object providing a view on loaded values."""
+        return self._loaded_values.values()
+
+    def items(self) -> ItemsView[str, str]:
+        """A set-like object providing a view on loaded items."""
+        return self._loaded_values.items()
 
     def load(self, *loader: Loader) -> Eggviron:
         """
