@@ -17,22 +17,36 @@ class MockLoader:
         return self._values
 
 
+SIMPLE_VALUES = {
+    "foo": "bar",
+    "biz": "baz",
+    "answer": "42",
+    "funny_number": "69.420",
+    "we_are_so_back": "1",
+}
+
+
 @pytest.fixture
 def carton() -> Eggviron:
     # Create a Eggviron with a simple value loaded for testing
-    simple_values = {
-        "foo": "bar",
-        "biz": "baz",
-        "answer": "42",
-        "funny_number": "69.420",
-        "we_are_so_back": "1",
-    }
     sb = Eggviron()
 
-    for key, value in simple_values.items():
+    for key, value in SIMPLE_VALUES.items():
         sb[key] = value
 
     return sb
+
+
+def test_dict_views_methods(carton: Eggviron) -> None:
+    # Ensure the KeysView, ValuesView, and ItemsView methods exists
+
+    keys_view = carton.keys()
+    values_view = carton.values()
+    items_view = carton.items()
+
+    assert keys_view == SIMPLE_VALUES.keys()
+    assert sorted(values_view) == sorted(SIMPLE_VALUES.values())
+    assert items_view == SIMPLE_VALUES.items()
 
 
 def test_loaded_value_property_is_copy(carton: Eggviron) -> None:
