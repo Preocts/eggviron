@@ -16,6 +16,10 @@ RUN_TESTS_WITH_EXTRAS: list[tuple[str, ...]] = [
     ("aws",),
 ]
 
+_file_python_version = pathlib.Path(".python-version").read_text()
+_uv_python_version = os.getenv("UV_PYTHON", "")
+# Favor the UV_PYTHON environment variable as this should override the .python-version
+PYTHON_VERSION = _uv_python_version or _file_python_version
 
 # What we allowed to clean (delete)
 CLEANABLE_TARGETS = [
@@ -66,23 +70,19 @@ UV_ARGS = [
 
 
 @nox.session(name="dev", python=False)
-def dev_session(session: nox.Session) -> None:
+def create_dev_environment(session: nox.Session) -> None:
     """Create a development environment."""
     session.run_install("uv", "sync", "--all-extras")
 
 
-@nox.session(name="test", python=False)
+@nox.session(name="test", python=PYTHON_VERSION)
 def run_tests_with_coverage(session: nox.Session) -> None:
     """Run pytest in isolated environment, display coverage. Extra arguements passed to pytest."""
-    uv_args = UV_ARGS
-    if "UV_PYTHON" in os.environ:
-        uv_args = UV_ARGS + [f"--python={os.environ['UV_PYTHON']}"]
-
     partial = "partial-coverage" in session.posargs
     if partial:
         session.posargs.remove("partial-coverage")
 
-    coverage = functools.partial(session.run, "uv", "run", *uv_args, "coverage")
+    coverage = functools.partial(session.run, "uv", "run", *UV_ARGS, "coverage")
     coverage("erase")
 
     for extras in RUN_TESTS_WITH_EXTRAS or [()]:
@@ -90,7 +90,7 @@ def run_tests_with_coverage(session: nox.Session) -> None:
         for _extra in extras:
             extra_args.extend(["--extra", _extra])
 
-        session.run_install("uv", "sync", *extra_args, *uv_args)
+        session.run_install("uv", "sync", *extra_args, *UV_ARGS)
         coverage("run", "--parallel-mode", "--module", "pytest", *session.posargs)
 
     if not partial:
@@ -99,7 +99,7 @@ def run_tests_with_coverage(session: nox.Session) -> None:
         coverage("html")
 
 
-@nox.session(name="combine", python=False)
+@nox.session(name="combine", python=PYTHON_VERSION)
 def combine_coverage(session: nox.Session) -> None:
     """Combine parallel-mode coverage files and produce reports."""
     session.run_install("uv", "sync", "--all-extras", *UV_ARGS)
@@ -112,7 +112,7 @@ def combine_coverage(session: nox.Session) -> None:
     coverage("json")
 
 
-@nox.session(name="lint", python=False)
+@nox.session(name="lint", python=PYTHON_VERSION)
 def run_linters(session: nox.Session) -> None:
     """Run code linters, and type checking against all files."""
     session.run_install("uv", "sync", "--all-extras", "--group", "lint", *UV_ARGS)
@@ -121,7 +121,7 @@ def run_linters(session: nox.Session) -> None:
         session.run("uv", "run", *UV_ARGS, *linter_args)
 
 
-@nox.session(name="format", python=False)
+@nox.session(name="format", python=PYTHON_VERSION)
 def run_formatters(session: nox.Session) -> None:
     """Run code formatters against all files."""
     session.run_install("uv", "sync", "--all-extras", "--group", "format", *UV_ARGS)
