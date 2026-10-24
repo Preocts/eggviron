@@ -37,7 +37,7 @@ dev = [
     "pytest-randomly",
     "coverage",
     "types-boto3[ssm]",
-    "vcrpy",
+    "moto[ssm]>=5.2.4",
 ]
 
 [project.optional-dependencies]
