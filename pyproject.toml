@@ -51,6 +51,9 @@ homepage = "https://github.com/Preocts/eggviron"
 [tool.hatch.version]
 source = "vcs"
 
+[tool.uv]
+exclude-newer = "P7D"
+
 [tool.black]
 line-length = 100
 
